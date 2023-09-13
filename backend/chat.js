@@ -1,5 +1,7 @@
-// chat
+// chat tree implementation
+// TODO: license info (GPL-3?)
 
+// or diedrate
 function rehydrate(up, m, i) {
 	const a = new Message(up, i,
 		new User(m.user.name, m.user.png),
@@ -58,18 +60,17 @@ async function genKeyWithIV() {
 // crypto wrapper around MessageRoot for encryption
 // server should use this class
 export class CryptMessageRoot extends MessageRoot {
-	constructor(d, aad, k, iv) {
+	constructor(d, k, iv) {
 		super();
 		this.cryptKey = null;
 		this.cryptIV  = null; // init vector
-		this.cryptAAD = null; // additional auth data
 		// create/update/delete threshold for save().
 		// this can be increased for chat trees that see
 		// more activity to prevent server load caused by
 		// crypt ops
 		this.cryptSaveThreshold = 50;
 
-		this.cryptReady = this.#cryptInit(d, aad, k, iv);
+		this.cryptReady = this.#cryptInit(d, k, iv);
 	}
 	
 	// if this returns non-null, you should destroy this
@@ -82,12 +83,9 @@ export class CryptMessageRoot extends MessageRoot {
 		super.triggerModify();
 	}
 
-	async #cryptInit(d, aad, k, iv) {
-		if (!aad)
-			throw new TypeError("AAD is empty or not defined");
+	async #cryptInit(d, k, iv) {
 		// new chat
 		if (!d || d instanceof MessageRoot) {
-			this.cryptAAD = aad;
 			[this.cryptKey, this.cryptIV] = await genKeyWithIV();
 			if (d instanceof MessageRoot)
 				this.children = d.children;
@@ -100,10 +98,8 @@ export class CryptMessageRoot extends MessageRoot {
 			await crypto.subtle.importKey("raw", k, "AES-GCM", true, ["encrypt", "decrypt"]);
 		this.children = JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({
 			name: "AES-GCM",
-			iv: iv,
-			additionalData: aad
+			iv: iv
 		}, ck, d))).map((c, i) => rehydrate(this, c, i));
-		this.cryptAAD = aad;
 		// regenerate key
 		[this.cryptKey, this.cryptIV] = await genKeyWithIV();
 		return true;
@@ -112,13 +108,13 @@ export class CryptMessageRoot extends MessageRoot {
 	// anything calling save should destroy this object
 	// after it returns
 	async encrypt() {
+		// how am I supposed to indent this???
 		return [await crypto.subtle.encrypt({
 			name: "AES-GCM",
-			iv: this.cryptIV,
-			additionalData: this.cryptAAD
+			iv: this.cryptIV
 		}, this.cryptKey,
 			new TextEncoder().encode(this.serialize())),
-			this.cryptAAD, this.cryptKey, this.cryptIV];
+			this.cryptKey, this.cryptIV];
 	}
 }
 
