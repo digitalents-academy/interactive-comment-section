@@ -1,0 +1,194 @@
+* {
+  font-family: "Rubik", sans-serif;
+  font-size: 16px;
+}
+
+body {
+  background-color: hsl(228, 33%, 97%);
+}
+
+.Room {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.MessageTree {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  gap: 10px;
+}
+
+.Replies {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.Divider {
+  width: 5%;
+  display: flex;
+  background: none;
+  justify-content: center;
+}
+
+.DividerCenter {
+  width: 4px;
+  background-color: hsl(223, 19%, 93%);
+}
+
+.RepliesContainer {
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+  gap: 5px;
+}
+
+.Message {
+  background-color: hsl(0, 0%, 100%);
+  border-radius: 6px;
+  box-shadow: 0px 1px 5px hsl(211, 10%, 45%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+  height: auto;
+  width: 100%;
+}
+@media (max-width: 375px) {
+  .Message {
+    width: 95%;
+  }
+}
+
+.Title {
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  gap: 10px;
+  height: 30px;
+  width: auto;
+}
+
+.Pfp {
+  width: 30px;
+  height: 30px;
+}
+
+.Time {
+  color: hsl(211, 10%, 45%);
+  font-weight: 500;
+  overflow: auto;
+}
+
+.AuthorName {
+  color: hsl(212, 24%, 26%);
+  font-weight: 700;
+}
+
+.Vote {
+  position: absolute;
+  width: 20%;
+  max-width: 40px;
+  height: 90px;
+  background-color: hsl(223, 19%, 93%);
+  color: hsl(211, 10%, 45%);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.Votes {
+  font-weight: 700;
+  color: hsl(238, 40%, 52%);
+}
+
+.CTRL:hover {
+  cursor: pointer;
+}
+
+.Tag {
+  color: hsl(238, 40%, 52%);
+  font-weight: 700;
+}
+
+.Text {
+  color: hsl(211, 10%, 45%);
+  width: 70%;
+  margin-left: 55px;
+}
+
+.youTag {
+  color: white;
+  background-color: hsl(238, 40%, 52%);
+  border-radius: 3px;
+  padding: 3px;
+}
+
+.MessageBody {
+  display: flex;
+  position: relative;
+  left: 55px;
+  flex-direction: row;
+  width: 70%;
+}
+
+.Controls {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap-reverse;
+  gap: 10px;
+  position: absolute;
+  left: 60%;
+  width: 30%;
+}
+
+.Delete {
+  color: hsl(358, 79%, 66%);
+  font-weight: 500;
+  display: flex;
+  gap: 5px;
+}
+.Delete:hover {
+  cursor: pointer;
+}
+
+.Del {
+  height: 16px;
+  width: 16px;
+}
+
+.Ed {
+  height: 16px;
+  width: 16px;
+}
+
+.Rep {
+  height: 16px;
+  width: 16px;
+}
+
+.Edit {
+  color: hsl(238, 40%, 52%);
+  font-weight: 500;
+  gap: 5px;
+}
+.Edit:hover {
+  cursor: pointer;
+}
+
+.Reply {
+  color: hsl(238, 40%, 52%);
+  font-weight: 500;
+  gap: 5px;
+}
+.Reply:hover {
+  cursor: pointer;
+}/*# sourceMappingURL=App.css.map */
