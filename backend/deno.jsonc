@@ -1,5 +1,11 @@
 {
-  "tasks": {
-    "dev": "deno run --watch main.js"
-  }
+	"tasks": {
+		"backend": "deno run -A main.js"
+	},
+	"lint": {
+		"rules": {
+			// let me use footguns in peace you absolute tyrant
+			"exclude": ["no-var", "no-inner-declarations"]
+		}
+	}
 }
