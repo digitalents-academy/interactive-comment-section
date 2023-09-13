@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import MessageComp from './components/Message'
-import './App.css'
+import './css/App.css'
 import Data from '../../data.json'
 const Username = Data.currentUser.username
 
