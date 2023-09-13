@@ -27,6 +27,7 @@ chat.addUser("marisa", "./pfps/marisa.png");
 chat.addUser("reimu", "./pfps/reimu.png");
 chat.addUser("cirno", "./pfps/iceicebaby.png");
 chat.addUser("barrierpolice", "./pfps/yukari.png");
+chat.addUser("suika", "./pfps/shithead.png");
 
 chat.add("marisa", 3, "master-spark rocks, cirno sucks da ze");
 chat.add("cirno", -1, "this witch is just jealous of my mad-rad ice magic 9");
@@ -54,6 +55,8 @@ console.log("<<< CRYPTO >>>");
 
 const cryptchat = new Chat.CryptMessageRoot(so);
 await cryptchat.cryptReady;
+
+cryptchat.add("suika", 0, "I'm late to the party, what's up");
 
 const enc = await cryptchat.encrypt();
 

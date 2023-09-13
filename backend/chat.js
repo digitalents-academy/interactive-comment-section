@@ -46,10 +46,7 @@ export class MessageRoot {
 		this.children = obj.chat.map((m, i) => hydrateMessage(this, this, m, i))
 	}
 
-	// if this function returns non-null, the owner of this
-	// MessageRoot should destroy it and create a new one,
-	// calling cryptInit() with the returned values
-	// (you can even use apply())
+	// dummy for CryptoMessageRoot.triggerModify()
 	triggerModify() {
 		return new Promise(r => r(null));
 	}
@@ -125,7 +122,7 @@ export class CryptMessageRoot extends MessageRoot {
 	
 	// if this returns non-null, you should destroy this
 	// object and make a new one, using the elements of
-	// the returned array as arguments to the new one
+	// the returned array as arguments to the new one.
 	triggerModify() {
 		this.modifyCount++;
 		if (this.modifyCount >= this.cryptSaveThreshold)
