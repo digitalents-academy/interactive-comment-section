@@ -58,6 +58,11 @@ export class MessageRoot {
 	serialize() {
 		return JSON.stringify(this.children.map(c => c.serialize()));
 	}
+
+	byVotes() {
+		return this.children.sort((a, b) =>
+			(a.votes < b.votes) - (b.votes < a.votes));
+	}
 }
 
 async function genKeyWithIV() {

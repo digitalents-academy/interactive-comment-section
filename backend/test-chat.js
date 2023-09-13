@@ -40,6 +40,9 @@ console.log("Serialized:");
 console.log(so);
 console.log("Reconstructed:");
 console.log(new Chat.MessageRoot(so));
+// this wording makes me feel dumb
+console.log("Votes of the list of top-level messages sorted by votes:");
+console.log(chat.byVotes().map(m => m.votes));
 
 console.log("<<< CRYPTO >>>");
 
