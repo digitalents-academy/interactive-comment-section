@@ -1,6 +1,8 @@
 * {
   font-family: "Rubik", sans-serif;
   font-size: 16px;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -59,7 +61,7 @@ body {
   height: auto;
   width: 100%;
 }
-@media (max-width: 375px) {
+@media (max-width: 500px) {
   .Message {
     width: 95%;
   }
@@ -142,22 +144,15 @@ body {
 
 .Controls {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap-reverse;
-  gap: 10px;
   position: absolute;
-  left: 60%;
-  width: 30%;
-}
-
-.Delete {
-  color: hsl(358, 79%, 66%);
-  font-weight: 500;
-  display: flex;
-  gap: 5px;
-}
-.Delete:hover {
-  cursor: pointer;
+  flex-direction: row;
+  justify-content: end;
+  align-content: center;
+  align-items: center;
+  gap: 10px;
+  width: auto;
+  height: 30px;
+  left: 1rem;
 }
 
 .Del {
@@ -190,5 +185,15 @@ body {
   gap: 5px;
 }
 .Reply:hover {
+  cursor: pointer;
+}
+
+.Delete {
+  color: hsl(358, 79%, 66%);
+  font-weight: 500;
+  display: flex;
+  gap: 5px;
+}
+.Delete:hover {
   cursor: pointer;
 }/*# sourceMappingURL=App.css.map */
