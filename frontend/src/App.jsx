@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import MessageComp from './components/Message'
 import './css/App.css'
-import Data from '../../data.json'
-const Username = Data.currentUser.username
+import Data from '../../data.json'//Change for real data(?)
+const Username = Data.currentUser.username//Temporary
 
 const App = () => {
   const [messages, setMessages] = useState(Data.comments)
 
-  function getAuth(auth){
+  function getAuth(auth){ //Change when we have epic data
     if (auth === Username) {
       return true
     }
@@ -15,7 +15,7 @@ const App = () => {
   }
 
   const MappedMessages = messages.map((msg) => {
-
+      //big boi comment & reply tree
       let Replies = null
       
       if (msg.replies.length > 0) {
