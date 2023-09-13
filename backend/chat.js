@@ -226,7 +226,7 @@ export class Message {
 			timestamp: this.time,
 		}];
 		this.children.map(e => e.serializeFlat(true)).forEach(s =>
-			msg.splice(msg.length, 0, ...s));
+			msg.push(...s));
 		return msg;
 	}
 }
