@@ -1,2 +1,5 @@
 # certs
 *.pem
+
+# other stuff
+backend/chat.json

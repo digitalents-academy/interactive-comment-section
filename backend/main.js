@@ -18,6 +18,7 @@
 
 import * as Oak from 'https://deno.land/x/oak@v12.6.1/mod.ts';
 
+import * as Util from './util.js';
 import * as Chat from './chat.js';
 
 function cryptLoad(path) {
@@ -31,26 +32,29 @@ function cryptLoad(path) {
 	if (!fi.isFile)
 		return new Chat.CryptMessageRoot();
 	const d = JSON.parse(Deno.readTextFileSync(path));
-	const data = new TextEncoder().encode(atob(d.enc));
-	const key  = new TextEncoder().encode(atob(d.key));
-	const iv   = new TextEncoder().encode(atob(d.iv));
-	return new Chat.CryptMessageRoot(data, key, iv);
+	return new Chat.CryptMessageRoot(
+		Util.unbase64(d.enc),
+		Util.unbase64(d.key),
+		Util.unbase64(d.iv)
+	);
 }
 
 async function cryptSave(path) {
 	const enc = await chat.encrypt();
 	Deno.writeTextFileSync(path, JSON.stringify({
-		enc: btoa(new TextDecoder().decode(enc[0])),
-		key: btoa(new TextDecoder().decode(enc[1])),
-		iv:  btoa(new TextDecoder().decode(enc[2]))
+		enc: Util.base64(enc[0]),
+		key: Util.base64(enc[1]),
+		iv:  Util.base64(enc[2])
 	}));
 }
+
+const CHAT_PATH = "./chat.json";
 
 const svr    = new Oak.Application();
 const router = new Oak.Router();
 const abort  = new AbortController();
 
-const chat = cryptLoad("./chat.json");
+const chat = cryptLoad(CHAT_PATH);
 await chat.cryptReady;
 
 router.get("/", ctx => {
@@ -64,17 +68,22 @@ router.get("/", ctx => {
 				<h1>Placeholder index</h1>
 			</body>
 		</html>
-	`
+	`;
 });
 
 router.get("/api/chat", ctx => {
+	ctx.response.type = "application/json";
 	ctx.response.body = chat.serialize();
 });
 
-Deno.addSignalListener("SIGINT", () => {
+Deno.addSignalListener("SIGINT", async () => {
 	console.log("Stopping!");
-
+	await cryptSave(CHAT_PATH);
 	abort.abort();
+});
+
+svr.addEventListener("error", e => {
+	console.log(e.error);
 });
 
 svr.use(router.routes());
