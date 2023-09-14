@@ -53,11 +53,13 @@ export class MessageRoot {
 
 	addUser(n, p) {
 		this.users[n] = new User(n, p);
+		return this.triggerModify();
 	}
 
 	removeUser(n) {
 		this.users.splice(this.users.findIndex(
 			u => u.name === n), 1);
+		return this.triggerModify();
 	}
 
 	add(u, v, t, ts = null) {
@@ -116,8 +118,15 @@ export class CryptMessageRoot extends MessageRoot {
 		// crypt ops
 		this.cryptSaveThreshold = 50;
 		this.modifyCount = 0;
+		this.modifyHandler = () => new Promise(r => r(null));
 
 		this.cryptReady = this.#cryptInit(d, k, iv);
+	}
+
+	onTriggerModify(f) {
+		if (typeof(f) !== "function")
+			throw new TypeError("handler must be a function");
+		this.modifyHandler = f;
 	}
 	
 	// if this returns non-null, you should destroy this
@@ -126,7 +135,7 @@ export class CryptMessageRoot extends MessageRoot {
 	triggerModify() {
 		this.modifyCount++;
 		if (this.modifyCount >= this.cryptSaveThreshold)
-			return this.encrypt();
+			return this.modifyHandler(this);
 		super.triggerModify();
 	}
 
