@@ -11,7 +11,7 @@ $VeryLightGray:hsl(228, 33%, 97%);
 $White:hsl(0, 0%, 100%);
 
 @mixin mobile{
-    @media (max-width:800px) { //remember to reset
+    @media (max-width:890px) { //remember to reset
         @content;
     }
 }
@@ -105,6 +105,7 @@ body{
 .Pfp{
     width:30px;
     height:30px;
+    border-radius:100%;
 }
 
 .Time{
@@ -126,7 +127,7 @@ body{
     background-color:$LightGray;
     color:$GrayishBlue;
     border-radius:6px;
-    gap:5px;
+    gap:15px;
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -150,6 +151,7 @@ body{
 .CTRL{
     &:hover{
         cursor:pointer;
+        filter: invert(36%) sepia(65%) saturate(712%) hue-rotate(202deg) brightness(84%) contrast(88%);
     }
 }
 
@@ -159,10 +161,14 @@ body{
 }
 
 .Text{
+    position:relative;
+    bottom:20px;
     color:$GrayishBlue;
     width:70%;
     margin-left:55px;
     @include mobile{
+        bottom:0;
+        top:10px;
         margin-left:0;
         width:100%;
         order:2;
@@ -227,6 +233,7 @@ body{
 .Rep{
     height:16px;
     width:16px;
+
 }
 
 //Tx
@@ -236,7 +243,7 @@ body{
     gap:5px;
     &:hover{
         cursor:pointer;
-        color:$LightGrayishBlue;
+        filter: invert(87%) sepia(14%) saturate(1721%) hue-rotate(190deg) brightness(100%) contrast(88%);
     }
 }
 
@@ -246,7 +253,7 @@ body{
     gap:5px;
     &:hover{
         cursor:pointer;
-        color:$LightGrayishBlue;
+        filter: invert(87%) sepia(14%) saturate(1721%) hue-rotate(190deg) brightness(100%) contrast(88%);
     }
 }
 
@@ -257,6 +264,6 @@ body{
     gap:5px;
     &:hover{
         cursor:pointer;
-        color:$PaleRed;
+        filter: invert(85%) sepia(84%) saturate(3956%) hue-rotate(289deg) brightness(104%) contrast(104%);
     }
 }

@@ -24,7 +24,7 @@ body {
   width: 50%;
   gap: 10px;
 }
-@media (max-width: 800px) {
+@media (max-width: 890px) {
   .MessageTree {
     width: 95%;
   }
@@ -66,7 +66,7 @@ body {
   height: auto;
   width: 100%;
 }
-@media (max-width: 800px) {
+@media (max-width: 890px) {
   .Message {
     width: 95%;
     padding-bottom: 0px;
@@ -82,7 +82,7 @@ body {
   height: 30px;
   width: auto;
 }
-@media (max-width: 800px) {
+@media (max-width: 890px) {
   .Title {
     order: 1;
   }
@@ -91,6 +91,7 @@ body {
 .Pfp {
   width: 30px;
   height: 30px;
+  border-radius: 100%;
 }
 
 .Time {
@@ -112,13 +113,13 @@ body {
   background-color: hsl(223, 19%, 93%);
   color: hsl(211, 10%, 45%);
   border-radius: 6px;
-  gap: 5px;
+  gap: 15px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
-@media (max-width: 800px) {
+@media (max-width: 890px) {
   .Vote {
     position: relative;
     flex-direction: row;
@@ -137,6 +138,7 @@ body {
 
 .CTRL:hover {
   cursor: pointer;
+  filter: invert(36%) sepia(65%) saturate(712%) hue-rotate(202deg) brightness(84%) contrast(88%);
 }
 
 .Tag {
@@ -145,12 +147,16 @@ body {
 }
 
 .Text {
+  position: relative;
+  bottom: 20px;
   color: hsl(211, 10%, 45%);
   width: 70%;
   margin-left: 55px;
 }
-@media (max-width: 800px) {
+@media (max-width: 890px) {
   .Text {
+    bottom: 0;
+    top: 10px;
     margin-left: 0;
     width: 100%;
     order: 2;
@@ -172,7 +178,7 @@ body {
   width: 70%;
   height: auto;
 }
-@media (max-width: 800px) {
+@media (max-width: 890px) {
   .MessageBody {
     order: 1;
     width: 100%;
@@ -194,7 +200,7 @@ body {
   bottom: 27px;
   z-index: 1;
 }
-@media (max-width: 800px) {
+@media (max-width: 890px) {
   .Controls {
     order: 6;
     position: relative;
@@ -228,7 +234,7 @@ body {
 }
 .Edit:hover {
   cursor: pointer;
-  color: hsl(239, 57%, 85%);
+  filter: invert(87%) sepia(14%) saturate(1721%) hue-rotate(190deg) brightness(100%) contrast(88%);
 }
 
 .Reply {
@@ -238,7 +244,7 @@ body {
 }
 .Reply:hover {
   cursor: pointer;
-  color: hsl(239, 57%, 85%);
+  filter: invert(87%) sepia(14%) saturate(1721%) hue-rotate(190deg) brightness(100%) contrast(88%);
 }
 
 .Delete {
@@ -249,5 +255,5 @@ body {
 }
 .Delete:hover {
   cursor: pointer;
-  color: hsl(357, 100%, 86%);
+  filter: invert(85%) sepia(84%) saturate(3956%) hue-rotate(289deg) brightness(104%) contrast(104%);
 }/*# sourceMappingURL=App.css.map */
