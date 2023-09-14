@@ -1,34 +1,59 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import MessageComp from './components/Message'
+import './css/App.css'
+import Data from '../../data.json'//Change for real data(?)
+const Username = Data.currentUser.username//Temporary
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [messages, setMessages] = useState(Data.comments)
+
+  function getAuth(auth){ //Change when we have epic data
+    if (auth === Username) {
+      return true
+    }
+    return false
+  }
+
+  const MappedMessages = messages.map((msg) => {
+      //big boi comment & reply tree
+      let Replies = null
+      
+      if (msg.replies.length > 0) {
+        Replies = msg.replies.map(reply => <MessageComp
+            isAuthor={getAuth(reply.user.username)}
+            data={reply}
+            key={reply.id}
+          />
+        )
+      }
+
+      return(
+        <div className='MessageTree'>
+          <MessageComp 
+            isAuthor={getAuth(msg.user.username)} 
+            data={msg}
+            key={msg.id}
+          />
+          {
+            Replies && 
+            <div className='Replies'>
+              <div className='Divider'>
+                <div className='DividerCenter'/>
+              </div>
+              <div className='RepliesContainer'>
+                {Replies}
+              </div>
+            </div>
+          }
+        </div>
+      )
+    }
+  )
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className='Room'>
+      {MappedMessages}
+    </div>
   )
 }
 

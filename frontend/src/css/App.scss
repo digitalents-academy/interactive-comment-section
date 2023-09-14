@@ -1,0 +1,310 @@
+//Primary Colors
+$ModerateBlue:hsl(238, 40%, 52%);
+$LightGrayishBlue:hsl(239, 57%, 85%);
+$SoftRed:hsl(358, 79%, 66%);
+$PaleRed:hsl(357, 100%, 86%);
+//Neutral Colors
+$DarkBlue:hsl(212, 24%, 26%);
+$GrayishBlue:hsl(211, 10%, 45%);
+$LightGray:hsl(223, 19%, 93%);
+$VeryLightGray:hsl(228, 33%, 97%);
+$White:hsl(0, 0%, 100%);
+
+@mixin mobile{
+    @media (max-width:890px) { //remember to reset
+        @content;
+    }
+}
+
+*{
+    font-family:'Rubik',sans-serif;
+    font-size:16px;
+    margin:0;
+    padding:0;
+}
+
+body{
+    background-color:$VeryLightGray;
+}
+
+button{
+    background:none;
+    border-style:none;
+}
+.Room{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-content:center;
+    align-items:center;
+    gap:20px;
+}
+
+//REPLIES N STUF
+.MessageTree{
+    display:flex;
+    flex-direction:column;
+    width:50%;
+    gap:10px;
+    @include mobile{
+        width:95%;
+    }
+}
+
+.Replies{
+    display:flex;
+    flex-direction:row;
+    width:100%;
+}
+
+.Divider{
+    width:5%;
+    display:flex;
+    background:none;
+    justify-content:center;
+}
+
+.DividerCenter{
+    width:4px;
+    background-color:$LightGray;
+}
+
+.RepliesContainer{
+    display:flex;
+    flex-direction:column;
+    width:95%;
+    gap:5px;
+}
+
+.Message{
+    background-color:$White;
+    border-radius:6px;
+    box-shadow:0px 1px 5px $GrayishBlue;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:10px;
+    height:auto;
+    width:100%;
+
+    @include mobile{
+        width:95%;
+        padding-bottom:0px;
+    }
+}
+
+.Title{
+    display:flex;
+    flex-direction:row;
+    justify-content:right;
+    align-items:center;
+    gap:10px;
+    height:30px;
+    width:auto;
+    @include mobile{
+        order:1;
+    }
+}
+
+.Pfp{
+    width:30px;
+    height:30px;
+    border-radius:100%;
+}
+
+.Time{
+    color:$GrayishBlue;
+    font-weight:500;
+    overflow:auto;
+}
+
+.AuthorName{
+    color:$DarkBlue;
+    font-weight:700;
+}
+
+.Vote{
+    position:absolute;
+    width:20%;
+    max-width:40px;
+    height:90px;
+    background-color:$LightGray;
+    color:$GrayishBlue;
+    border-radius:6px;
+    gap:15px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    @include mobile{
+        position:relative;
+        flex-direction:row;
+        max-width:90px;
+        width:90px;
+        height:40px;
+        order:5;
+        top:20px;
+    }
+}
+
+.Votes{
+    font-weight:700;
+    color:$ModerateBlue;
+}
+
+.CTRL{
+    &:hover{
+        cursor:pointer;
+        filter: invert(36%) sepia(65%) saturate(712%) hue-rotate(202deg) brightness(84%) contrast(88%);
+    }
+}
+
+.Tag{
+    color:$ModerateBlue;
+    font-weight:700;
+}
+
+.Text{
+    position:relative;
+    bottom:20px;
+    color:$GrayishBlue;
+    width:90%;
+    margin-left:55px;
+    @include mobile{
+        bottom:0;
+        top:10px;
+        margin-left:0;
+        width:100%;
+        order:2;
+    }
+}
+
+.youTag{
+    color:white;
+    background-color:$ModerateBlue;
+    border-radius:3px;
+    padding:3px;
+}
+
+.MessageBody{
+    display:flex;
+    position:relative;
+    left:55px;
+    flex-direction:row;
+    width:70%;
+    height:auto;
+    @include mobile{
+        order:1;
+        width:100%;
+        left:0;
+    }
+}
+
+.Controls{
+    display:flex;
+    position:relative;
+    flex-direction:row;
+    justify-content:flex-end;
+    align-content:center;
+    align-items:center;
+    gap:10px;
+    width:30%;
+    height:30px;
+    left:70%;
+    bottom:27px;
+    z-index:1;
+    @include mobile{
+        order:6;
+        position:relative;
+        width:70%;
+        height:40px;
+        top:-15px;
+        left:27.5%;
+        bottom:0;
+    }
+}
+//Icons
+.Del{
+    height:16px;
+    width:16px;
+}
+
+.Ed{
+    height:16px;
+    width:16px;
+}
+
+.Rep{
+    height:16px;
+    width:16px;
+
+}
+
+//Tx
+.Edit{
+    color:$ModerateBlue;
+    font-weight:700;
+    gap:5px;
+    &:hover{
+        cursor:pointer;
+        filter: invert(87%) sepia(14%) saturate(1721%) hue-rotate(190deg) brightness(100%) contrast(88%);
+    }
+}
+
+.Reply{
+    color:$ModerateBlue;
+    font-weight:700;
+    gap:5px;
+    &:hover{
+        cursor:pointer;
+        filter: invert(87%) sepia(14%) saturate(1721%) hue-rotate(190deg) brightness(100%) contrast(88%);
+    }
+}
+
+.Delete{
+    color:$SoftRed;
+    font-weight:700;
+    display:flex;
+    gap:5px;
+    &:hover{
+        cursor:pointer;
+        filter: invert(85%) sepia(84%) saturate(3956%) hue-rotate(289deg) brightness(104%) contrast(104%);
+    }
+}
+//UPD8
+.Update{
+    background-color:$ModerateBlue;
+    font-weight:700;
+    padding:10px;
+    border-radius:6px;
+    width:30%;
+    align-self:flex-end;
+    color:white;
+    &:hover{
+        cursor:pointer;
+        background-color:$LightGrayishBlue;
+    }
+}
+
+.Editing{
+    display:flex;
+    flex-direction:column;
+}
+
+.EditTx{
+    position:relative;
+    bottom:20px;
+    color:$GrayishBlue;
+    width:88%;
+    margin-left:55px;
+    border-radius:6px;
+    resize:none;
+    height:100px;
+    @include mobile{
+        bottom:0;
+        top:10px;
+        margin-left:0;
+        width:100%;
+        order:2;
+    }
+}
