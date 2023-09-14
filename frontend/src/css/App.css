@@ -1,0 +1,303 @@
+* {
+  font-family: "Rubik", sans-serif;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: hsl(228, 33%, 97%);
+}
+
+button {
+  background: none;
+  border-style: none;
+}
+
+.Room {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.MessageTree {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  gap: 10px;
+}
+@media (max-width: 890px) {
+  .MessageTree {
+    width: 95%;
+  }
+}
+
+.Replies {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.Divider {
+  width: 5%;
+  display: flex;
+  background: none;
+  justify-content: center;
+}
+
+.DividerCenter {
+  width: 4px;
+  background-color: hsl(223, 19%, 93%);
+}
+
+.RepliesContainer {
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+  gap: 5px;
+}
+
+.Message {
+  background-color: hsl(0, 0%, 100%);
+  border-radius: 6px;
+  box-shadow: 0px 1px 5px hsl(211, 10%, 45%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+  height: auto;
+  width: 100%;
+}
+@media (max-width: 890px) {
+  .Message {
+    width: 95%;
+    padding-bottom: 0px;
+  }
+}
+
+.Title {
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  align-items: center;
+  gap: 10px;
+  height: 30px;
+  width: auto;
+}
+@media (max-width: 890px) {
+  .Title {
+    order: 1;
+  }
+}
+
+.Pfp {
+  width: 30px;
+  height: 30px;
+  border-radius: 100%;
+}
+
+.Time {
+  color: hsl(211, 10%, 45%);
+  font-weight: 500;
+  overflow: auto;
+}
+
+.AuthorName {
+  color: hsl(212, 24%, 26%);
+  font-weight: 700;
+}
+
+.Vote {
+  position: absolute;
+  width: 20%;
+  max-width: 40px;
+  height: 90px;
+  background-color: hsl(223, 19%, 93%);
+  color: hsl(211, 10%, 45%);
+  border-radius: 6px;
+  gap: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+@media (max-width: 890px) {
+  .Vote {
+    position: relative;
+    flex-direction: row;
+    max-width: 90px;
+    width: 90px;
+    height: 40px;
+    order: 5;
+    top: 20px;
+  }
+}
+
+.Votes {
+  font-weight: 700;
+  color: hsl(238, 40%, 52%);
+}
+
+.CTRL:hover {
+  cursor: pointer;
+  filter: invert(36%) sepia(65%) saturate(712%) hue-rotate(202deg) brightness(84%) contrast(88%);
+}
+
+.Tag {
+  color: hsl(238, 40%, 52%);
+  font-weight: 700;
+}
+
+.Text {
+  position: relative;
+  bottom: 20px;
+  color: hsl(211, 10%, 45%);
+  width: 90%;
+  margin-left: 55px;
+}
+@media (max-width: 890px) {
+  .Text {
+    bottom: 0;
+    top: 10px;
+    margin-left: 0;
+    width: 100%;
+    order: 2;
+  }
+}
+
+.youTag {
+  color: white;
+  background-color: hsl(238, 40%, 52%);
+  border-radius: 3px;
+  padding: 3px;
+}
+
+.MessageBody {
+  display: flex;
+  position: relative;
+  left: 55px;
+  flex-direction: row;
+  width: 70%;
+  height: auto;
+}
+@media (max-width: 890px) {
+  .MessageBody {
+    order: 1;
+    width: 100%;
+    left: 0;
+  }
+}
+
+.Controls {
+  display: flex;
+  position: relative;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 30%;
+  height: 30px;
+  left: 70%;
+  bottom: 27px;
+  z-index: 1;
+}
+@media (max-width: 890px) {
+  .Controls {
+    order: 6;
+    position: relative;
+    width: 70%;
+    height: 40px;
+    top: -15px;
+    left: 27.5%;
+    bottom: 0;
+  }
+}
+
+.Del {
+  height: 16px;
+  width: 16px;
+}
+
+.Ed {
+  height: 16px;
+  width: 16px;
+}
+
+.Rep {
+  height: 16px;
+  width: 16px;
+}
+
+.Edit {
+  color: hsl(238, 40%, 52%);
+  font-weight: 700;
+  gap: 5px;
+}
+.Edit:hover {
+  cursor: pointer;
+  filter: invert(87%) sepia(14%) saturate(1721%) hue-rotate(190deg) brightness(100%) contrast(88%);
+}
+
+.Reply {
+  color: hsl(238, 40%, 52%);
+  font-weight: 700;
+  gap: 5px;
+}
+.Reply:hover {
+  cursor: pointer;
+  filter: invert(87%) sepia(14%) saturate(1721%) hue-rotate(190deg) brightness(100%) contrast(88%);
+}
+
+.Delete {
+  color: hsl(358, 79%, 66%);
+  font-weight: 700;
+  display: flex;
+  gap: 5px;
+}
+.Delete:hover {
+  cursor: pointer;
+  filter: invert(85%) sepia(84%) saturate(3956%) hue-rotate(289deg) brightness(104%) contrast(104%);
+}
+
+.Update {
+  background-color: hsl(238, 40%, 52%);
+  font-weight: 700;
+  padding: 10px;
+  border-radius: 6px;
+  width: 30%;
+  align-self: flex-end;
+  color: white;
+}
+.Update:hover {
+  cursor: pointer;
+  background-color: hsl(239, 57%, 85%);
+}
+
+.Editing {
+  display: flex;
+  flex-direction: column;
+}
+
+.EditTx {
+  position: relative;
+  bottom: 20px;
+  color: hsl(211, 10%, 45%);
+  width: 88%;
+  margin-left: 55px;
+  border-radius: 6px;
+  resize: none;
+  height: 100px;
+}
+@media (max-width: 890px) {
+  .EditTx {
+    bottom: 0;
+    top: 10px;
+    margin-left: 0;
+    width: 100%;
+    order: 2;
+  }
+}/*# sourceMappingURL=App.css.map */

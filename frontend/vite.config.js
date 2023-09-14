@@ -13,3 +13,14 @@ export default defineConfig({
 		}
 	}
 })
+
+// https://vitejs.dev/config/
+export default defineConfig({
+	plugins: [react()],
+	server: {
+		https: {
+			key: fs.readFileSync("../backend/cert/ckey.pem"),
+			cert: fs.readFileSync("../backend/cert/cert.pem")
+		}
+	}
+})

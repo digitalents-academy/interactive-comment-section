@@ -1,5 +1,6 @@
 # certs
 *.pem
+node_modules
 
 # other stuff
 backend/chat.json
