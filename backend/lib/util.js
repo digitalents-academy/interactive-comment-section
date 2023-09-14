@@ -15,3 +15,18 @@ export function unbase64(s) {
 export function unixTime() {
 	return Math.floor(new Date().valueOf() / 1000);
 }
+
+export function either(a, b) {
+	return a ? a : b;
+}
+
+export function denoLogRGB(c) {
+	const rc = Array.isArray(c) ? c :
+		[ c >> 16 & 0xFF, c >> 8 & 0xFF, c & 0xFF ];
+	console.log("\x1b[38;2;" + rc.join(";") + "m" +
+		[...arguments].slice(1).join(" ") + "\x1b[39m");
+}
+
+export function isDeno() {
+	return navigator.userAgent.startsWith("Deno/");
+}
