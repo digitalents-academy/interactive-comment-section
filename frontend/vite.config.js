@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-//import * as fs from "node:fs";
+//import * as fs from "node:fs"; //Commenting out stuff that I cant use yet
 
 // https://vitejs.dev/config/
 export default defineConfig({
