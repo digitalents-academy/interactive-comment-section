@@ -1,0 +1,123 @@
+.modal-bg {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9;
+
+    .login-modal {
+        z-index: 10;
+        color: hsl(212, 24%, 26%);
+        border-radius: 10px;
+        background-color: white;
+        width: 30%;
+        min-width: 300px;
+        max-width: 360px;
+        padding: 18px 14px;
+        border: 1px solid hsl(238, 40%, 52%);
+
+        .header {
+            //color: black;
+            color:hsl(212, 24%, 26%);
+        }
+
+        .usernameinput {
+            width: 100%;
+
+            p {
+                margin: 0 0 4px 0;
+            }
+
+            input {
+                color:hsl(212, 24%, 26%);
+                width: 95%;
+                border-radius: 4px;
+                height: 22px;
+                font-size: 16px;
+                border: 2px solid hsl(211, 10%, 45%);
+            }
+
+            input:hover {
+                border: 2px solid hsl(212, 24%, 26%);
+            }
+
+        }
+
+        .clickhere {
+            color: hsl(211, 10%, 45%);
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+
+            p:hover {
+                color: black;
+                text-decoration: underline;
+                cursor:pointer;
+            }
+
+            img {
+                margin: 0 auto 8px auto;
+                width: 120px;
+                height: 120px;
+                cursor: pointer;
+            }
+        }
+
+        .loginbutton {
+            width: 100%;
+            margin: 0 0 4px 0;
+
+            button {
+                width: 100%;
+                border-radius: 4px;
+                height: 30px;
+                border: 1px solid hsl(211, 10%, 45%);
+                background-color: hsl(228, 33%, 97%);
+            }
+
+            button:hover {
+                filter: brightness(110%);
+            }
+        }
+    }   
+}
+
+
+
+/*
+
+- Moderate blue: hsl(238, 40%, 52%)
+
+
+const buttonstyle = 
+    backgroundColor: 'hsl(223, 19%, 93%)',
+    width: '100%',
+    margin: '0 auto',
+    borderRadius: '3px',
+    border: '0',
+    height: '30px'
+}
+
+
+
+backgroundColor: 'white',
+    borderRadius: '4px',
+    padding: '12px 18px',
+    color: 'hsl(212, 24%, 26%)',
+    width: '30%',
+    minWidth: '320px',
+    zIndex: '4',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    display: 'flex',
+    flexDirection: 'column'
+*/
