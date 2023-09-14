@@ -9,6 +9,11 @@ body {
   background-color: hsl(228, 33%, 97%);
 }
 
+button {
+  background: none;
+  border-style: none;
+}
+
 .Room {
   display: flex;
   flex-direction: column;
@@ -150,7 +155,7 @@ body {
   position: relative;
   bottom: 20px;
   color: hsl(211, 10%, 45%);
-  width: 70%;
+  width: 90%;
   margin-left: 55px;
 }
 @media (max-width: 890px) {
@@ -256,4 +261,43 @@ body {
 .Delete:hover {
   cursor: pointer;
   filter: invert(85%) sepia(84%) saturate(3956%) hue-rotate(289deg) brightness(104%) contrast(104%);
+}
+
+.Update {
+  background-color: hsl(238, 40%, 52%);
+  font-weight: 700;
+  padding: 10px;
+  border-radius: 6px;
+  width: 30%;
+  align-self: flex-end;
+  color: white;
+}
+.Update:hover {
+  cursor: pointer;
+  background-color: hsl(239, 57%, 85%);
+}
+
+.Editing {
+  display: flex;
+  flex-direction: column;
+}
+
+.EditTx {
+  position: relative;
+  bottom: 20px;
+  color: hsl(211, 10%, 45%);
+  width: 88%;
+  margin-left: 55px;
+  border-radius: 6px;
+  resize: none;
+  height: 100px;
+}
+@media (max-width: 890px) {
+  .EditTx {
+    bottom: 0;
+    top: 10px;
+    margin-left: 0;
+    width: 100%;
+    order: 2;
+  }
 }/*# sourceMappingURL=App.css.map */

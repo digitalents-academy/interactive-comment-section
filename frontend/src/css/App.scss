@@ -27,6 +27,10 @@ body{
     background-color:$VeryLightGray;
 }
 
+button{
+    background:none;
+    border-style:none;
+}
 .Room{
     display:flex;
     flex-direction:column;
@@ -164,7 +168,7 @@ body{
     position:relative;
     bottom:20px;
     color:$GrayishBlue;
-    width:70%;
+    width:90%;
     margin-left:55px;
     @include mobile{
         bottom:0;
@@ -265,5 +269,42 @@ body{
     &:hover{
         cursor:pointer;
         filter: invert(85%) sepia(84%) saturate(3956%) hue-rotate(289deg) brightness(104%) contrast(104%);
+    }
+}
+//UPD8
+.Update{
+    background-color:$ModerateBlue;
+    font-weight:700;
+    padding:10px;
+    border-radius:6px;
+    width:30%;
+    align-self:flex-end;
+    color:white;
+    &:hover{
+        cursor:pointer;
+        background-color:$LightGrayishBlue;
+    }
+}
+
+.Editing{
+    display:flex;
+    flex-direction:column;
+}
+
+.EditTx{
+    position:relative;
+    bottom:20px;
+    color:$GrayishBlue;
+    width:88%;
+    margin-left:55px;
+    border-radius:6px;
+    resize:none;
+    height:100px;
+    @include mobile{
+        bottom:0;
+        top:10px;
+        margin-left:0;
+        width:100%;
+        order:2;
     }
 }

@@ -1,5 +1,15 @@
+import { useState } from 'react'
+import Edit from '../components/Edit'
+
 export default function Message({isAuthor, data}){
     
+    const [editing, setEditing] = useState(null)
+
+    const handleEdit = (e) => {
+        console.log(e)
+        setEditing(null)
+    }
+
     return(
         <div className='Message'>
 
@@ -24,17 +34,22 @@ export default function Message({isAuthor, data}){
 
             <div className='Controls'>
                 {
-                    isAuthor && <p className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</p>
+                    isAuthor && <button className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
                 }
                 {
-                    isAuthor && <p className='Edit'><img className='Ed' src='/assets/edit.svg'/> Edit</p>
+                    isAuthor && <button onClick={()=>setEditing(data.id)} className='Edit'><img className='Ed' src='/assets/edit.svg'/> Edit</button>
                 }
                 {
-                    !isAuthor && <p className='Reply'><img className='Rep' src='/assets/reply.svg'/> Reply</p>
+                    !isAuthor && <button className='Reply'><img className='Rep' src='/assets/reply.svg'/> Reply</button>
                 }
             </div>
-            
-            <p className='Text'>{data.replyingTo && <span className='Tag'>@{data.replyingTo}</span>} {data.content}</p>
+            {
+               editing ? <Edit
+                    data={data}
+                    onFinish={handleEdit}
+               />
+               : <p className='Text'>{data.replyingTo && <span className='Tag'>@{data.replyingTo}</span>} {data.content}</p>
+            }
         </div>
     )
 }
