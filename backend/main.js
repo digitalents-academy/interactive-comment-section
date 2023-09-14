@@ -115,6 +115,7 @@ router.post("/api/user/new", async ctx => {
 		serveError(ctx, 403, "this user exists");
 		return;
 	}
+	// TODO: fix this. f.name contains a filename, not the field name
 	const png  = body.files.find(f => f.name === "png");
 	if (!png) {
 		serveError(ctx, 400, "missing profile picture");
