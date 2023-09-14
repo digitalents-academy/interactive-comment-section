@@ -24,6 +24,11 @@ body {
   width: 50%;
   gap: 10px;
 }
+@media (max-width: 800px) {
+  .MessageTree {
+    width: 95%;
+  }
+}
 
 .Replies {
   display: flex;
@@ -61,20 +66,26 @@ body {
   height: auto;
   width: 100%;
 }
-@media (max-width: 500px) {
+@media (max-width: 800px) {
   .Message {
     width: 95%;
+    padding-bottom: 0px;
   }
 }
 
 .Title {
   display: flex;
   flex-direction: row;
-  justify-content: left;
+  justify-content: right;
   align-items: center;
   gap: 10px;
   height: 30px;
   width: auto;
+}
+@media (max-width: 800px) {
+  .Title {
+    order: 1;
+  }
 }
 
 .Pfp {
@@ -101,10 +112,22 @@ body {
   background-color: hsl(223, 19%, 93%);
   color: hsl(211, 10%, 45%);
   border-radius: 6px;
+  gap: 5px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+@media (max-width: 800px) {
+  .Vote {
+    position: relative;
+    flex-direction: row;
+    max-width: 90px;
+    width: 90px;
+    height: 40px;
+    order: 5;
+    top: 20px;
+  }
 }
 
 .Votes {
@@ -126,6 +149,13 @@ body {
   width: 70%;
   margin-left: 55px;
 }
+@media (max-width: 800px) {
+  .Text {
+    margin-left: 0;
+    width: 100%;
+    order: 2;
+  }
+}
 
 .youTag {
   color: white;
@@ -140,19 +170,40 @@ body {
   left: 55px;
   flex-direction: row;
   width: 70%;
+  height: auto;
+}
+@media (max-width: 800px) {
+  .MessageBody {
+    order: 1;
+    width: 100%;
+    left: 0;
+  }
 }
 
 .Controls {
   display: flex;
-  position: absolute;
+  position: relative;
   flex-direction: row;
-  justify-content: end;
+  justify-content: flex-end;
   align-content: center;
   align-items: center;
   gap: 10px;
-  width: auto;
+  width: 30%;
   height: 30px;
-  left: 1rem;
+  left: 70%;
+  bottom: 27px;
+  z-index: 1;
+}
+@media (max-width: 800px) {
+  .Controls {
+    order: 6;
+    position: relative;
+    width: 70%;
+    height: 40px;
+    top: -15px;
+    left: 27.5%;
+    bottom: 0;
+  }
 }
 
 .Del {
@@ -172,7 +223,7 @@ body {
 
 .Edit {
   color: hsl(238, 40%, 52%);
-  font-weight: 500;
+  font-weight: 700;
   gap: 5px;
 }
 .Edit:hover {
@@ -181,7 +232,7 @@ body {
 
 .Reply {
   color: hsl(238, 40%, 52%);
-  font-weight: 500;
+  font-weight: 700;
   gap: 5px;
 }
 .Reply:hover {
@@ -190,7 +241,7 @@ body {
 
 .Delete {
   color: hsl(358, 79%, 66%);
-  font-weight: 500;
+  font-weight: 700;
   display: flex;
   gap: 5px;
 }
