@@ -236,6 +236,7 @@ body{
     gap:5px;
     &:hover{
         cursor:pointer;
+        color:$LightGrayishBlue;
     }
 }
 
@@ -245,6 +246,7 @@ body{
     gap:5px;
     &:hover{
         cursor:pointer;
+        color:$LightGrayishBlue;
     }
 }
 
@@ -255,5 +257,6 @@ body{
     gap:5px;
     &:hover{
         cursor:pointer;
+        color:$PaleRed;
     }
 }

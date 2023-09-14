@@ -228,6 +228,7 @@ body {
 }
 .Edit:hover {
   cursor: pointer;
+  color: hsl(239, 57%, 85%);
 }
 
 .Reply {
@@ -237,6 +238,7 @@ body {
 }
 .Reply:hover {
   cursor: pointer;
+  color: hsl(239, 57%, 85%);
 }
 
 .Delete {
@@ -247,4 +249,5 @@ body {
 }
 .Delete:hover {
   cursor: pointer;
+  color: hsl(357, 100%, 86%);
 }/*# sourceMappingURL=App.css.map */

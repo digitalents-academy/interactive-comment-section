@@ -4,9 +4,9 @@ export default function Message({isAuthor, data}){
         <div className='Message'>
 
             <div className='Vote'>
-                <img className='Plus CTRL' src={'../../../images/icon-plus.svg'}/>
+                <img className='Plus CTRL' src='../../../images/icon-plus.svg'/>
                 <p className='Votes'>{data.score}</p>
-                <img className='Minus CTRL' src={'../../../images/icon-minus.svg'}/>
+                <img className='Minus CTRL' src='../../../images/icon-minus.svg'/>
             </div>
 
             <div className='MessageBody'>
@@ -24,13 +24,13 @@ export default function Message({isAuthor, data}){
 
             <div className='Controls'>
                 {
-                    isAuthor && <p className='Delete'><img className='Del' src={'../../../images/icon-delete.svg'}/> Delete</p>
+                    isAuthor && <p className='Delete'><img className='Del' src='../../../images/icon-delete.svg'/> Delete</p>
                 }
                 {
-                    isAuthor && <p className='Edit'><img className='Ed' src={'../../../images/icon-edit.svg'}/> Edit</p>
+                    isAuthor && <p className='Edit'><img className='Ed' src='../../../images/icon-edit.svg'/> Edit</p>
                 }
                 {
-                    !isAuthor && <p className='Reply'><img className='Rep' src={'../../../images/icon-reply.svg'}/> Reply</p>
+                    !isAuthor && <p className='Reply'><img className='Rep' src='../../../images/icon-reply.svg'/> Reply</p>
                 }
             </div>
             
