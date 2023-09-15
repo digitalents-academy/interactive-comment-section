@@ -18,8 +18,7 @@
 
 // I'm too lazy to learn the test system
 
-import * as Chat from './chat.js';
-
+import * as Chat from './lib/chat.js';
 
 const chat = new Chat.MessageRoot();
 
@@ -36,6 +35,8 @@ chat.children[1].add("reimu", 1, "you got owned before. cope + mald + chew on ic
 chat.children[1].children[0].add("barrierpolice", 1, "everyone calm down lmao", 0);
 chat.children[1].add("marisa", 0, "take the L");
 
+chat.add("doesnteggsist", 1, "I am smonk");
+
 const so = chat.serialize();
 const flatThread = chat.children[1].serializeFlat();
 
@@ -50,24 +51,3 @@ console.log(new Chat.MessageRoot(so));
 // this wording makes me feel dumb
 console.log("Votes of the list of top-level messages sorted by votes:");
 console.log(chat.byVotes().map(m => m.votes));
-
-console.log("<<< CRYPTO >>>");
-
-const cryptchat = new Chat.CryptMessageRoot(so);
-await cryptchat.cryptReady;
-
-cryptchat.add("suika", 0, "I'm late to the party, what's up");
-
-const enc = await cryptchat.encrypt();
-
-const redec = new Chat.CryptMessageRoot(...enc);
-await redec.cryptReady;
-
-console.log("Crypto root:");
-console.log(cryptchat);
-
-console.log("Encrypted:");
-console.log(enc);
-
-console.log("Re-decrypted:");
-console.log(redec);
