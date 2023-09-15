@@ -1,3 +1,21 @@
+/*
+ * comments backend - crypto support for Chat.MessageRoot
+ * Copyright (C) 2023  Marisa
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import Logger from './logger.js';
 import * as Chat from './chat.js';
 import * as Util from './util.js';
@@ -119,8 +137,6 @@ export class CryptMessageRoot extends Chat.MessageRoot {
 		this.cryptModifyCount = 0;
 	}
 
-	// anything calling save should destroy this object
-	// after it returns
 	async encrypt() {
 		// how am I supposed to indent this???
 		return [await crypto.subtle.encrypt({
