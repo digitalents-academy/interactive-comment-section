@@ -2,7 +2,7 @@ import { useState } from "react";
 import PropTypes from 'prop-types';
 import './LoginModal.css';
 
-const LoginModal = ({set}) => {
+const LoginModal = ({setModal}) => {
 
     const [username, setUsername] = useState('');
     const [pfp, setPfp] = useState(null);
@@ -11,7 +11,7 @@ const LoginModal = ({set}) => {
         if (username.length > 1 /*and something obv*/) {
             const profile = {username: username, pfp: pfp};
             console.log(profile); /* const something = await axios.post(somewhere, profile).then(jotain).catch(jnejne) ???? */
-            set(false);
+            setModal(false);
             return;
         }
         console.log('username is too short'); //idk
@@ -40,6 +40,7 @@ const LoginModal = ({set}) => {
                 </div>
                 <div className="loginbutton">
                     <button onClick={() => login()} style={{filter: username.length < 2 && 'opacity(40%)'}}>Login</button>
+                    <button onClick={() => setModal(false)} style={{background: 'red'}}>Close</button>
                 </div>
             </div>
         </div>
