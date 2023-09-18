@@ -16,4 +16,4 @@ openssl req -new -key "$1" -out "$2.csr" -sha256\
 openssl x509 -req -in "$2.csr" -out "$2" -days 365 -sha256\
 	-CA "$3" -CAkey "$4" -extfile - <<< "$SAN"
 openssl x509 -in "$2" -noout -text
-	rm "$2.csr"
+rm "$2.csr"

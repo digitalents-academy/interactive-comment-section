@@ -18,7 +18,11 @@
 
 import * as Util from './util.js';
 
+const DELETED_USER = "deleted user";
+
 function hydrateMessage(r, up, m, i) {
+	// r.users[m.user] should be undefined for deleted users
+	// which is fine (check Message constructor)
 	const a = new Message(r, up, i,
 		r.users[m.user], m.votes, m.content, m.timestamp);
 	for (let i = 0; i < m.children.length; i++)
@@ -53,11 +57,13 @@ export class MessageRoot {
 
 	addUser(n, p) {
 		this.users[n] = new User(n, p);
+		return this.triggerModify();
 	}
 
 	removeUser(n) {
 		this.users.splice(this.users.findIndex(
 			u => u.name === n), 1);
+		return this.triggerModify();
 	}
 
 	add(u, v, t, ts = null) {
@@ -76,8 +82,8 @@ export class MessageRoot {
 	serialize() {
 		return {
 			messageRoot: true,
-			users: Object.fromEntries(Object.entries(this.users).map(e =>
-				[e[0], e[1].png])),
+			users: Object.fromEntries(Object.entries(this.users).filter(u =>
+				u[0] !== DELETED_USER).map(e => [e[0], e[1].png])),
 			chat: this.children.map(c => c.serialize())
 		};
 	}
@@ -92,86 +98,13 @@ export class MessageRoot {
 	}
 }
 
-async function genKeyWithIV() {
-	return [
-		await crypto.subtle.generateKey({
-			name: "AES-GCM",
-			length: 256
-		}, true, ["encrypt", "decrypt"]),
-		
-		crypto.getRandomValues(new Uint8Array(12))
-	];
-}
-
-// crypto wrapper around MessageRoot for encryption
-// server should use this class
-export class CryptMessageRoot extends MessageRoot {
-	constructor(d, k, iv) {
-		super();
-		this.cryptKey = null;
-		this.cryptIV  = null; // init vector
-		// create/update/delete threshold for save().
-		// this can be increased for chat trees that see
-		// more activity to prevent server load caused by
-		// crypt ops
-		this.cryptSaveThreshold = 50;
-		this.modifyCount = 0;
-
-		this.cryptReady = this.#cryptInit(d, k, iv);
-	}
-	
-	// if this returns non-null, you should destroy this
-	// object and make a new one, using the elements of
-	// the returned array as arguments to the new one.
-	triggerModify() {
-		this.modifyCount++;
-		if (this.modifyCount >= this.cryptSaveThreshold)
-			return this.encrypt();
-		super.triggerModify();
-	}
-
-	async #cryptInit(d, k, iv) {
-		// new chat
-		if (!d?.byteLength || d?.messageRoot) {
-			[this.cryptKey, this.cryptIV] = await genKeyWithIV();
-			if (d.messageRoot)
-				this.hydrate(d);
-			return true;
-		}
-		// existing chat
-		if (!k || !iv)
-			throw new TypeError("ciphertext given without key or IV");
-		const ck = (k instanceof CryptoKey) ? k :
-			await crypto.subtle.importKey("raw", k, "AES-GCM", true, ["encrypt", "decrypt"]);
-		const dec = JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({
-			name: "AES-GCM",
-			iv: iv
-		}, ck, d)));
-		this.hydrate(dec);
-		// regenerate key
-		[this.cryptKey, this.cryptIV] = await genKeyWithIV();
-		return true;
-	}
-	// anything calling save should destroy this object
-	// after it returns
-	async encrypt() {
-		// how am I supposed to indent this???
-		return [await crypto.subtle.encrypt({
-			name: "AES-GCM",
-			iv: this.cryptIV
-		}, this.cryptKey,
-			new TextEncoder().encode(this.serializeString())),
-			this.cryptKey, this.cryptIV];
-	}
-}
-
 export class Message {
 	constructor(r, p, i, u, v, t, ts) {
 		this.children = [];
 		this.root  = r;
 		this.up    = p;
 		this.index = i;
-		this.user  = u;
+		this.user  = Util.either(u, new User(DELETED_USER, "default.png"));
 		this.votes = v;
 		this.text  = t;
 		this.time  = ts;

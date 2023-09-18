@@ -18,50 +18,46 @@
 
 import * as Oak from 'https://deno.land/x/oak@v12.6.1/mod.ts';
 
-import Logger from './lib/logger.js';
-import * as Util from './lib/util.js';
-import * as Chat from './lib/chat.js';
+import Logger from '../common_lib/logger.js';
+import * as DenoUtil from './lib/deno_util.js';
+import * as CC from './lib/cryptchat.js';
 
-function cryptLoad(path) {
-	// I want to flatten the person who decided that
-	// all the stat()s should throw on file not found
-	try {
-		var fi = Deno.lstatSync(path);
-	} catch(_) {
-		fi = { isFile: false };
-	}
-	if (!fi.isFile)
-		return new Chat.CryptMessageRoot();
-	const d = JSON.parse(Deno.readTextFileSync(path));
-	return new Chat.CryptMessageRoot(
-		Util.unbase64(d.enc),
-		Util.unbase64(d.key),
-		Util.unbase64(d.iv)
-	);
-}
-
-async function cryptSave(path) {
-	const enc = await chat.encrypt();
-	Deno.writeTextFileSync(path, JSON.stringify({
-		enc: Util.base64(enc[0]),
-		key: Util.base64(enc[1]),
-		iv:  Util.base64(enc[2])
-	}));
-}
-
-const SVR_PORT = 8443;
-const CHAT_PATH = "./chat.json";
+const config = {
+	svr_port: 8443,
+	chat_path: DenoUtil.agnosticPath("./comments.json"),
+	pfp_path: DenoUtil.agnosticPath("./pfps"),
+	ckey_path: DenoUtil.agnosticPath("./cert/ckey.pem"),
+	cert_path: DenoUtil.agnosticPath("./cert/cert.pem")
+};
 
 const logger = new Logger("Main");
-const lcrypt = logger.sub("Crypt");
 const lroute = logger.sub("Routing");
+
+logger.info("Configuration:\n\t" + Object.entries(config).map(e =>
+	e.join(" => ")).join("\n\t"));
+
+async function getUserBody(ctx) {
+	const raw = await ctx.request.body({type: "form-data"}).value;
+	return raw.read({
+		outPath: config.pfp_path
+	});
+}
+
+function serveError(ctx, s, msg) {
+	lroute.warn("an API request to", ctx.request.url.pathname,
+		"failed:", msg);
+	ctx.response.status = s;
+	ctx.response.body = {
+		success: false,
+		error: msg
+	};
+}
 
 const svr    = new Oak.Application();
 const router = new Oak.Router();
 const abort  = new AbortController();
 
-lcrypt.info("Loading from", CHAT_PATH);
-const chat = cryptLoad(CHAT_PATH);
+const chat = new CC.CryptMessageRoot(config.chat_path);
 await chat.cryptReady;
 
 router.get("/api/chat", ctx => {
@@ -69,10 +65,56 @@ router.get("/api/chat", ctx => {
 	ctx.response.body = chat.serialize();
 });
 
-Deno.addSignalListener("SIGINT", async () => {
+router.post("/api/user/new", async ctx => {
+	ctx.response.type = "application/json";
+	let body;
+	try {
+		body = await getUserBody(ctx);
+	} catch (_) {
+		serveError(ctx, 400, "invalid or missing multipart form body");
+		return;
+	}
+	const name = body.fields.name;
+	if (chat.users[name]) {
+		serveError(ctx, 403, "this user exists");
+		return;
+	}
+	const png  = body.files?.find(f => f.name === "png");
+	if (!png) {
+		serveError(ctx, 400, "missing profile picture");
+		return;
+	}
+	if (png.contentType !== "image/png") {
+		serveError(ctx, 400, `invalid profile picture (must be image/png, got ${png.contentType}`);
+		Deno.removeSync(png.filename);
+		return;
+	}
+	chat.addUser(name, DenoUtil.Path.basename(png.filename));
+	ctx.response.body = { success: true };
+});
+
+if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
+	if (DenoUtil.exists(config.pfp_path)) {
+		logger.error("Something other than a directory already exists at", config.pfp_path);
+		Deno.exit(1);
+	}
+	logger.info("Creating profile picture directory");
+	Deno.mkdirSync(config.pfp_path);
+}
+
+router.post("/api/pfps/:name", ctx => {
+	const path = DenoUtil.agnosticPath(config.pfp_path + "/" + ctx.params.name);
+	if (!DenoUtil.lstatSafe(path)?.isFile) {
+		ctx.response.type = "application/json";
+		serveError(404, "no such profile picture");
+	}
+	ctx.response.type = "image/png";
+	ctx.response.body = Deno.readFileSync(path);
+});
+
+Deno.addSignalListener("SIGINT", () => {
 	logger.warn("Stopping!");
-	lcrypt.info("Saving to", CHAT_PATH);
-	await cryptSave(CHAT_PATH);
+	chat.save();
 	abort.abort();
 });
 
@@ -87,12 +129,12 @@ svr.use((ctx, next) => {
 	next();
 });
 
-logger.info(`HTTPS starting on ${SVR_PORT}`);
+logger.info(`HTTPS starting on ${config.svr_port}`);
 
 svr.listen({
 	secure: true,
 	signal: abort.signal,
-	port: SVR_PORT,
-	key: Deno.readTextFileSync("./cert/ckey.pem"),
-	cert: Deno.readTextFileSync("./cert/cert.pem")
+	port: config.svr_port,
+	key: Deno.readTextFileSync(config.ckey_path),
+	cert: Deno.readTextFileSync(config.cert_path)
 });
