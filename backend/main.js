@@ -18,13 +18,13 @@
 
 import * as Oak from 'https://deno.land/x/oak@v12.6.1/mod.ts';
 
-import Logger from './lib/logger.js';
+import Logger from '../common_lib/logger.js';
 import * as DenoUtil from './lib/deno_util.js';
 import * as CC from './lib/cryptchat.js';
 
 const config = {
 	svr_port: 8443,
-	chat_path: DenoUtil.agnosticPath("./chat.json"),
+	chat_path: DenoUtil.agnosticPath("./comments.json"),
 	pfp_path: DenoUtil.agnosticPath("./pfps"),
 	ckey_path: DenoUtil.agnosticPath("./cert/ckey.pem"),
 	cert_path: DenoUtil.agnosticPath("./cert/cert.pem")

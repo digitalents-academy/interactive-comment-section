@@ -16,9 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Logger from './logger.js';
-import * as Chat from './chat.js';
-import * as Util from './util.js';
+import Logger from '../../common_lib/logger.js';
+import * as Chat from '../../common_lib/chat.js';
+import * as Util from '../../common_lib/util.js';
 import * as DenoUtil from './deno_util.js';
 
 async function genKeyWithIV() {

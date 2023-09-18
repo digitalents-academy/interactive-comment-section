@@ -3,4 +3,4 @@
 node_modules
 
 # other stuff
-backend/chat.json
+backend/comments.json

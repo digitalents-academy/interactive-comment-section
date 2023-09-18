@@ -18,7 +18,7 @@
 
 // I'm too lazy to learn the test system
 
-import * as Chat from './lib/chat.js';
+import * as Chat from '../common_lib/chat.js';
 
 const chat = new Chat.MessageRoot();
 
