@@ -1,5 +1,9 @@
+import {useForm} from 'react-hook-form'
+
 export default function Edit({data, onFinish, ogSize}){ 
     //data={replyingTo, content}
+    const {handleSubmit, register, formState:{errors}} = useForm()
+
     const rep = data.replyingTo || null
     const con = data.content
     let str = null
@@ -9,10 +13,10 @@ export default function Edit({data, onFinish, ogSize}){
         str = con
     )
     return(
-        <div className='Editing'>
-            <textarea className='EditTx' defaultValue={str}/>
-            <button className='Update'>UPDATE</button>
-        </div>
+        <form onSubmit={handleSubmit(onFinish)} className='Editing'>
+            <textarea {...register('content')} className='EditTx' defaultValue={str}/>
+            <button type='submit' className='Update'>UPDATE</button>
+        </form>
     )
 }
 
