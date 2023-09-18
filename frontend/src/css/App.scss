@@ -352,12 +352,14 @@ button{
 .Send{
     display:flex;
     justify-content:space-around;
-    width:55%;
+    width:50%;
+    left:5%;
     height:100px;
     background-color:white;
     border-radius:6px;
     box-shadow:0px 1px 5px $GrayishBlue;
     padding:10px;
+    gap:10px;
     @include mobile{
         width:95%;
     }
