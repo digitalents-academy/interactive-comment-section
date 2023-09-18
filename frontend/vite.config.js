@@ -12,4 +12,4 @@ export default defineConfig({
 			cert: fs.readFileSync("../backend/cert/cert.pem")
 		}
 	}
-});
+})
