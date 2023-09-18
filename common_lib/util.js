@@ -16,6 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+export function base64valid(a) {
+	try {
+		void atob(a);
+		return true;
+	} catch(_) {
+		return false;
+	}
+}
+
 export function base64(a) {
 	if (!a.length)
 		return "";
@@ -47,4 +56,12 @@ export function denoLogRGB(c) {
 
 export function isDeno() {
 	return navigator.userAgent.startsWith("Deno/");
+}
+
+export async function sha256(b) {
+	return base64(await crypto.subtle.digest("SHA-256", b));
+}
+
+export function sha256str(s) {
+	return sha256(new TextEncoder().encode(s));
 }

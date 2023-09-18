@@ -32,6 +32,16 @@ async function genKeyWithIV() {
 	];
 }
 
+function cryptHydrateMessage(r, up, m, i) {
+	// r.users[m.user] should be undefined for deleted users
+	// which is fine (check Message constructor from ../common_lib/chat.js)
+	const a = new CryptMessage(r, up, i,
+		r.users[m.user], m.votes, m.content, m.timestamp, m.token);
+	for (let i = 0; i < m.children.length; i++)
+		a.children.push(cryptHydrateMessage(r, a, m.children[i], i));
+	return a;
+}
+
 export class CryptMessageRoot extends Chat.MessageRoot {
 	constructor(path) {
 		super();
@@ -60,6 +70,25 @@ export class CryptMessageRoot extends Chat.MessageRoot {
 
 	#error() {
 		this.logger.error(this.cryptFile + ":", ...arguments);
+	}
+
+	// override
+	hydrate(obj) {
+		if (!obj.messageRoot)
+			throw new TypeError("not a serialized MessageRoot");
+		this.users = Object.fromEntries(Object.entries(obj.users).map(e =>
+			[e[0], new CryptUser(e[0], e[1].png, e[1].pwhash, e[1].token)]));
+		this.children = obj.chat.map((m, i) => cryptHydrateMessage(this, this, m, i))
+	}
+
+	// override
+	addUser(n, p, h) {
+		if (!Util.base64valid(h)) {
+			this.#error("addUser(): invalid base64 password hash");
+			return;
+		}
+		this.users[n] = new CryptUser(n, p, h);
+		this.triggerModify();
 	}
 
 	async save(force = false) {
@@ -123,6 +152,15 @@ export class CryptMessageRoot extends Chat.MessageRoot {
 		}
 	}
 
+	serializeUser() {
+		return {
+			messageRoot: true,
+			users: Object.fromEntries(Object.entries(this.users).filter(u =>
+				u[0] !== DELETED_USER).map(e => [e[0], e[1].serializeUser()])),
+			chat: this.children.map(c => c.serializeUser())
+		};
+	}
+
 	// if this returns non-null, you should destroy this
 	// object and make a new one, using the elements of
 	// the returned array as arguments to the new one.
@@ -148,3 +186,42 @@ export class CryptMessageRoot extends Chat.MessageRoot {
 	}
 }
 
+export class CryptMessage extends Chat.Message {
+	constructor(r, p, i, u, v, t, ts, tok) {
+		super(r, p, i, u, v, t, ts);
+		this.token = tok;
+	}
+
+	serializeUser() {
+		return super.serialize();
+	}
+
+	serialize() {
+		return {
+			...super.serialize(),
+			token: this.token
+		}
+	}
+}
+
+export class CryptUser extends Chat.User {
+	constructor(n, p, h, t = null) {
+		super(n, p);
+		if (typeof(h) !== "string")
+			throw new TypeError("password must be a base64 string");
+		this.pwhash = h;
+		this.token = (t === null) ? Util.base64(crypto.getRandomValues(new Uint8Array(32))) : t;
+	}
+
+	serializeUser() {
+		return super.serialize();
+	}
+
+	serialize() {
+		return {
+			...super.serialize(),
+			pwhash: this.pwhash,
+			token: this.token
+		}
+	}
+}

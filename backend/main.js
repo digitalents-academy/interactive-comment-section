@@ -36,13 +36,6 @@ const lroute = logger.sub("Routing");
 logger.info("Configuration:\n\t" + Object.entries(config).map(e =>
 	e.join(" => ")).join("\n\t"));
 
-async function getUserBody(ctx) {
-	const raw = await ctx.request.body({type: "form-data"}).value;
-	return raw.read({
-		outPath: config.pfp_path
-	});
-}
-
 function serveError(ctx, s, msg) {
 	lroute.warn("an API request to", ctx.request.url.pathname,
 		"failed:", msg);
@@ -51,6 +44,15 @@ function serveError(ctx, s, msg) {
 		success: false,
 		error: msg
 	};
+}
+
+async function checkBody(ctx, btype) {
+	try {
+		return await ctx.request.body({type: btype}).value;
+	} catch(_) {
+		serveError(400, "invalid or missing body");
+		return null;
+	}
 }
 
 const svr    = new Oak.Application();
@@ -62,34 +64,54 @@ await chat.cryptReady;
 
 router.get("/api/chat", ctx => {
 	ctx.response.type = "application/json";
-	ctx.response.body = chat.serialize();
+	ctx.response.body = chat.serializeUser();
+});
+
+router.get("/api/user/exists", async ctx => {
+	ctx.response.type = "application/json";
+	const body = await checkBody(ctx, "json");
+	if (body === null)
+		return;
+	if (this.chat.users[body.user]) {
+		ctx.response.body = { success: true, exists: true };
+		return;
+	}
+	ctx.response.body = { success: true, exists: false };
 });
 
 router.post("/api/user/new", async ctx => {
 	ctx.response.type = "application/json";
-	let body;
+	const body = await checkBody(ctx, "form-data");
+	if (body === null)
+		return;
+	let formData;
 	try {
-		body = await getUserBody(ctx);
+		formData = body.read({ outPath: config.pfp_path });
 	} catch (_) {
-		serveError(ctx, 400, "invalid or missing multipart form body");
+		serveError(ctx, 400, "invalid or missing multipart form data");
 		return;
 	}
-	const name = body.fields.name;
+	const name = formData.fields.name;
 	if (chat.users[name]) {
 		serveError(ctx, 403, "this user exists");
 		return;
 	}
-	const png  = body.files?.find(f => f.name === "png");
+	const png = formData.files?.find(f => f.name === "png");
 	if (!png) {
 		serveError(ctx, 400, "missing profile picture");
 		return;
 	}
 	if (png.contentType !== "image/png") {
-		serveError(ctx, 400, `invalid profile picture (must be image/png, got ${png.contentType}`);
+		serveError(ctx, 400, "invalid media type for profile picture, must be image/png");
 		Deno.removeSync(png.filename);
 		return;
 	}
-	chat.addUser(name, DenoUtil.Path.basename(png.filename));
+	if (!formData.fields.pwhash) {
+		serveError(ctx, 400, "missing password hash");
+		return;
+	}
+	chat.addUser(name, DenoUtil.Path.basename(png.filename), formData.fields.pwhash);
+	// TODO: set token cookie
 	ctx.response.body = { success: true };
 });
 

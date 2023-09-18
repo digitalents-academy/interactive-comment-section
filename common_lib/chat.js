@@ -46,7 +46,7 @@ export class MessageRoot {
 		if (!obj.messageRoot)
 			throw new TypeError("not a serialized MessageRoot");
 		this.users = Object.fromEntries(Object.entries(obj.users).map(e =>
-			[e[0], new User(e[0], e[1])]));
+			[e[0], new User(e[0], e[1].png)]));
 		this.children = obj.chat.map((m, i) => hydrateMessage(this, this, m, i))
 	}
 
@@ -61,8 +61,7 @@ export class MessageRoot {
 	}
 
 	removeUser(n) {
-		this.users.splice(this.users.findIndex(
-			u => u.name === n), 1);
+		delete this.users[n];
 		return this.triggerModify();
 	}
 
@@ -83,7 +82,7 @@ export class MessageRoot {
 		return {
 			messageRoot: true,
 			users: Object.fromEntries(Object.entries(this.users).filter(u =>
-				u[0] !== DELETED_USER).map(e => [e[0], e[1].png])),
+				u[0] !== DELETED_USER).map(e => [e[0], e[1].serialize()])),
 			chat: this.children.map(c => c.serialize())
 		};
 	}
