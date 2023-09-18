@@ -4,6 +4,7 @@ import Data from '../../data.json'//Change for real data(?)
 const Username = Data.currentUser.username//Temporary
 
 import MessageComp from './components/Message'
+import Send from './components/Send'
 
 const App = () => {
   const [messages, setMessages] = useState(Data.comments)
@@ -54,6 +55,7 @@ const App = () => {
   return (
     <div className='Room'>
       {MappedMessages}
+      <Send/>
     </div>
   )
 }

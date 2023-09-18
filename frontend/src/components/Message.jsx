@@ -2,17 +2,20 @@ import { useState } from 'react'
 import Edit from '../components/Edit'
 import Reply from '../components/Reply'
 
+//createdAt will be a unix code, we'll convert it into how long ago it was sent
+
 export default function Message({isAuthor, data}){
     
     const [editing, setEditing] = useState(null)
     const [replying, setReplying] = useState(null)
 
-    const handleEdit = (e) => {
+    const handleEdit = (e) => { //When edit form is submitted
         console.log(e)
         setEditing(null)
     }
 
-    const handleReply = (e) => {
+    const handleReply = (e) => { //When reply form is submitted
+        console.log(e)
         setReplying(null)
     }
 
