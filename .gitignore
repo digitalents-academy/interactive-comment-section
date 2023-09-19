@@ -4,3 +4,4 @@ node_modules
 
 # other stuff
 backend/comments.json
+backend/keyring.json

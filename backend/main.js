@@ -18,6 +18,7 @@
 
 import * as Oak from 'https://deno.land/x/oak@v12.6.1/mod.ts';
 
+import Keyring from './lib/keyring.js';
 import Logger from '../common_lib/logger.js';
 import * as DenoUtil from './lib/deno_util.js';
 import * as CC from './lib/cryptchat.js';
@@ -26,6 +27,7 @@ const config = {
 	svr_port: 8443,
 	chat_path: DenoUtil.agnosticPath("./comments.json"),
 	pfp_path: DenoUtil.agnosticPath("./pfps"),
+	cookie_keyring: DenoUtil.agnosticPath("./keyring.json"),
 	ckey_path: DenoUtil.agnosticPath("./cert/ckey.pem"),
 	cert_path: DenoUtil.agnosticPath("./cert/cert.pem")
 };
@@ -55,18 +57,28 @@ async function checkBody(ctx, btype) {
 	}
 }
 
-const svr    = new Oak.Application();
-const router = new Oak.Router();
-const abort  = new AbortController();
+const abort = new AbortController();
 
 const chat = new CC.CryptMessageRoot(config.chat_path);
 await chat.cryptReady;
 
-router.get("/api/chat", ctx => {
-	ctx.response.type = "application/json";
-	ctx.response.body = chat.serializeUser();
-});
+const sessions = {};
 
+const keyring = new Keyring(config.cookie_keyring, 8);
+const svr = new Oak.Application({
+	keys: keyring.keys,
+	logErrors: false
+});
+const router = new Oak.Router();
+
+function stop() {
+	logger.warn("Stopping!");
+	abort.abort();
+	keyring.save();
+	chat.save();
+}
+
+// user API
 router.get("/api/user/exists", async ctx => {
 	ctx.response.type = "application/json";
 	const body = await checkBody(ctx, "json");
@@ -79,6 +91,7 @@ router.get("/api/user/exists", async ctx => {
 	ctx.response.body = { success: true, exists: false };
 });
 
+// auth
 router.post("/api/user/new", async ctx => {
 	ctx.response.type = "application/json";
 	const body = await checkBody(ctx, "form-data");
@@ -110,9 +123,75 @@ router.post("/api/user/new", async ctx => {
 		serveError(ctx, 400, "missing password hash");
 		return;
 	}
-	chat.addUser(name, DenoUtil.Path.basename(png.filename), formData.fields.pwhash);
-	// TODO: set token cookie
+	let user;
+	try {
+		user = chat.addUser(name,
+			DenoUtil.Path.basename(png.filename),
+			formData.fields.pwhash);
+	} catch(e) {
+		serveError(ctx, 400, e.message);
+		return;
+	}
+	await ctx.cookies.set("BearerToken", user.token);
+	sessions[user.token] = user;
+	ctx.response.body = { success: true, user: user.serializeUser() };
+});
+
+router.post("/api/user/login", async ctx => {
+	ctx.response.type = "application/json";
+	const body = await checkBody(ctx, "json");
+	if (body === null)
+		return;
+	const user = chat.users[body.name];
+	if (!user) {
+		serveError(ctx, 404, "no such user");
+		return;
+	}
+	if (body.pwhash !== user.pwhash) {
+		serveError(ctx, 403, "invalid password");
+		return;
+	}
+	await ctx.cookies.set("BearerToken", user.token);
+	sessions[user.token] = user;
+	ctx.response.body = { success: true, user: user.serializeUser() };
+});
+
+// deletion
+router.post("/api/user/logout", async ctx => {
+	ctx.response.type = "application/json";
+	const body = await checkBody(ctx, "json");
+	if (body === null)
+		return;
+	const token = await ctx.cookies.get("BearerToken");
+	if (!token) {
+		serveError(ctx, 400, "expired session");
+		return;
+	}
+	const user = sessions[token];
+	if (!user) {
+		serveError(ctx, 403, "invalid session");
+		return;
+	}
+	await ctx.cookies.delete("BearerToken");
+	user.regenerateToken();
 	ctx.response.body = { success: true };
+});
+
+// comments API
+router.get("/api/comment/list", ctx => {
+	ctx.response.type = "application/json";
+	ctx.response.body = chat.serializeUser();
+});
+
+// profile pictures
+router.post("/api/pfps/:name", ctx => {
+	const path = DenoUtil.agnosticPath(config.pfp_path + "/" + ctx.params.name);
+	if (!DenoUtil.lstatSafe(path)?.isFile) {
+		ctx.response.type = "application/json";
+		serveError(404, "no such profile picture");
+	}
+	ctx.response.type = "image/png";
+	ctx.response.body = Deno.readFileSync(path);
 });
 
 if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
@@ -124,24 +203,10 @@ if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
 	Deno.mkdirSync(config.pfp_path);
 }
 
-router.post("/api/pfps/:name", ctx => {
-	const path = DenoUtil.agnosticPath(config.pfp_path + "/" + ctx.params.name);
-	if (!DenoUtil.lstatSafe(path)?.isFile) {
-		ctx.response.type = "application/json";
-		serveError(404, "no such profile picture");
-	}
-	ctx.response.type = "image/png";
-	ctx.response.body = Deno.readFileSync(path);
-});
-
-Deno.addSignalListener("SIGINT", () => {
-	logger.warn("Stopping!");
-	chat.save();
-	abort.abort();
-});
-
 svr.addEventListener("error", e => {
-	console.log(e.error);
+	if (e.message === "Assertion failed")
+		return; // oak is bugged sometimes
+	logger.error(e.error);
 });
 
 svr.use(router.routes());
@@ -151,8 +216,6 @@ svr.use((ctx, next) => {
 	next();
 });
 
-logger.info(`HTTPS starting on ${config.svr_port}`);
-
 svr.listen({
 	secure: true,
 	signal: abort.signal,
@@ -160,3 +223,18 @@ svr.listen({
 	key: Deno.readTextFileSync(config.ckey_path),
 	cert: Deno.readTextFileSync(config.cert_path)
 });
+
+logger.info(`Listening on ${config.svr_port}.`);
+logger.info("Press CTRL+D to stop. DO NOT PRESS CTRL+C unless you want to exit uncleanly!");
+
+// oak somehow buggers SIGINT listeners. when you register
+// a SIGINT listener, start the Oak server and then hit
+// CTRL+C, you're thrown back into your command
+// interpreter while the actual process stays alive.
+// I figure there's some sort of weird issue between
+// Deno.listenTls and signal handlers that creates this
+// issue, because it doesn't happen in other programs.
+
+const eof = new Uint8Array(1);
+while (Deno.stdin.readSync(eof), eof[0] !== 0);
+stop();
