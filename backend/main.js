@@ -157,7 +157,6 @@ router.post("/api/user/login", async ctx => {
 	ctx.response.body = { success: true, user: user.serializeUser() };
 });
 
-// deletion
 router.get("/api/user/logout", async ctx => {
 	ctx.response.type = "application/json";
 	const token = await ctx.cookies.get("BearerToken");
