@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import './css/App.css'
-import API from './controllers/api' //GetChat (Get), Chat (Create), Update, Delete
+//import API from './controllers/api' //GetChat (Get), Chat (Create), Update, Delete
 import Data from '../../data.json'//Change for real data(?)
 const Username = Data.currentUser.name//Temporary
 
@@ -10,11 +10,11 @@ import Send from './components/Send'
 const App = () => {
   const [messages, setMessages] = useState(Data.comments)
 
-  useEffect(()=>{
+  /*useEffect(()=>{
       API.GetChat().then(res=>{
         setMessages(res)
       })
-  })
+  })*/
 
   function getAuth(auth){ //Change when we have epic data
     if (auth === Username) {
