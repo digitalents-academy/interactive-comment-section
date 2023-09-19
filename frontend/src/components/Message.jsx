@@ -3,7 +3,8 @@ import Edit from '../components/Edit'
 import Reply from '../components/Reply'
 
 import { UnixToGuess } from '../util/UnixConvert.js' //Unix timestamp converter
-//UnixToGuess(UnixTimestamp) -> "# X(s) Ago" (X = seconds,minutes,hours,days,weeks,months)
+//UnixToGuess(UnixTimestamp) -> "# X(s) Ago" 
+//^ X = "seconds", "minutes", "hours", "days", "weeks", "months" ^
 
 export default function Message({isAuthor, data}){
     
