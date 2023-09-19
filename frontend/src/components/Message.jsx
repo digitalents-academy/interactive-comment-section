@@ -27,15 +27,15 @@ export default function Message({isAuthor, data}){
 
                 <div className='Vote'>
                     <img className='Plus CTRL' src='/assets/plus.svg'/>
-                    <p className='Votes'>{data.score}</p>
+                    <p className='Votes'>{data.votes}</p>
                     <img className='Minus CTRL' src='/assets/minus.svg'/>
                 </div>
 
                 <div className='MessageBody'>
 
                     <div className='Title'>
-                        <img className='Pfp' src={data.user.image.png}/>
-                        <p className='AuthorName'>{data.user.username}</p>
+                        <img className='Pfp' src={data.user.png}/>
+                        <p className='AuthorName'>{data.user.name}</p>
                         {
                             isAuthor && <p className='youTag'>you</p>
                         }
@@ -49,10 +49,10 @@ export default function Message({isAuthor, data}){
                         isAuthor && <button className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
                     }
                     {
-                        isAuthor && <button onClick={()=>setEditing(data.id)} className='Edit'><img className='Ed' src='/assets/edit.svg'/> Edit</button>
+                        isAuthor && <button onClick={()=>setEditing(data.index)} className='Edit'><img className='Ed' src='/assets/edit.svg'/> Edit</button>
                     }
                     {
-                        !isAuthor && <button onClick={()=>setReplying(data.id)} className='Reply'><img className='Rep' src='/assets/reply.svg'/> Reply</button>
+                        !isAuthor && <button onClick={()=>setReplying(data.index)} className='Reply'><img className='Rep' src='/assets/reply.svg'/> Reply</button>
                     }
                 </div>
                 {
