@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Edit from '../components/Edit'
 import Reply from '../components/Reply'
 
-//createdAt will be a unix code, we'll convert it into how long ago it was sent
+//createdAt will be a unix timestamp, we'll convert it into how long ago it was sent
 
 export default function Message({isAuthor, data}){
     
