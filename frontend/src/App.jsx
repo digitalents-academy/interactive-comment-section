@@ -2,12 +2,11 @@ import { useState } from 'react'
 import MessageComp from './components/Message'
 import Modal from './components/LoginModal'
 import Data from '../../data.json'//Change for real data(?)
+import Send from './components/Send'
+
 import './css/App.css'
 
 const Username = Data.currentUser.username//Temporary
-
-import MessageComp from './components/Message'
-import Send from './components/Send'
 
 const App = () => {
   const [messages, setMessages] = useState(Data.comments)
