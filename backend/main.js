@@ -231,7 +231,7 @@ logger.info("Press CTRL+D to stop. DO NOT PRESS CTRL+C unless you want to exit u
 // a SIGINT listener, start the Oak server and then hit
 // CTRL+C, you're thrown back into your command
 // interpreter while the actual process stays alive.
-// I figure there's some sort of weird issue between
+// I figure there's some sort of weird interaction between
 // Deno.listenTls and signal handlers that creates this
 // issue, because it doesn't happen in other programs.
 
