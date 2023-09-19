@@ -2,7 +2,8 @@ import { useState } from 'react'
 import Edit from '../components/Edit'
 import Reply from '../components/Reply'
 
-//createdAt will be a unix timestamp, we'll convert it into how long ago it was sent
+import { UnixToGuess } from '../util/UnixConvert.js' //Unix timestamp converter
+//UnixToGuess(UnixTimestamp)
 
 export default function Message({isAuthor, data}){
     
@@ -37,7 +38,7 @@ export default function Message({isAuthor, data}){
                         {
                             isAuthor && <p className='youTag'>you</p>
                         }
-                        <p className='Time'>{data.createdAt}</p>
+                        <p className='Time'>{UnixToGuess(data.createdAt)}</p>
                     </div>
 
                 </div>

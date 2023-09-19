@@ -370,3 +370,14 @@ button{
     height:100%;
     border-radius:6px;
 }
+
+//PURELY TESTS
+.Tests{
+    width:50px;
+    height:20px;
+    background-color:red;
+    border-radius:6px;
+    &:hover{
+        cursor:pointer;
+    }
+}
