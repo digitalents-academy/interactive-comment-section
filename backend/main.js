@@ -28,6 +28,7 @@ const config = {
 	chat_path: DenoUtil.agnosticPath("./comments.json"),
 	pfp_path: DenoUtil.agnosticPath("./pfps"),
 	cookie_keyring: DenoUtil.agnosticPath("./keyring.json"),
+	keyring_size: 8,
 	ckey_path: DenoUtil.agnosticPath("./cert/ckey.pem"),
 	cert_path: DenoUtil.agnosticPath("./cert/cert.pem")
 };
@@ -64,7 +65,7 @@ await chat.cryptReady;
 
 const sessions = {};
 
-const keyring = new Keyring(config.cookie_keyring, 8);
+const keyring = new Keyring(config.cookie_keyring, config.keyring_size);
 const svr = new Oak.Application({
 	keys: keyring.keys,
 	logErrors: false
@@ -157,11 +158,8 @@ router.post("/api/user/login", async ctx => {
 });
 
 // deletion
-router.post("/api/user/logout", async ctx => {
+router.get("/api/user/logout", async ctx => {
 	ctx.response.type = "application/json";
-	const body = await checkBody(ctx, "json");
-	if (body === null)
-		return;
 	const token = await ctx.cookies.get("BearerToken");
 	if (!token) {
 		serveError(ctx, 400, "expired session");
@@ -173,6 +171,7 @@ router.post("/api/user/logout", async ctx => {
 		return;
 	}
 	await ctx.cookies.delete("BearerToken");
+	delete sessions[user.token];
 	user.regenerateToken();
 	ctx.response.body = { success: true };
 });
