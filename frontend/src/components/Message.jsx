@@ -6,7 +6,7 @@ import { UnixToGuess } from '../util/UnixConvert.js' //Unix timestamp converter
 //UnixToGuess(UnixTimestamp) -> "# X(s) Ago" 
 //^ X = "seconds", "minutes", "hours", "days", "weeks", "months" ^
 
-export default function Message({isAuthor, data}){
+export default function Message({isAuthor, data, handleDel}){
     
     const [editing, setEditing] = useState(null)
     const [replying, setReplying] = useState(null)
@@ -46,7 +46,7 @@ export default function Message({isAuthor, data}){
 
                 <div className='Controls'>
                     {
-                        isAuthor && <button className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
+                        isAuthor && <button onClick={handleDel(data.index)} className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
                     }
                     {
                         isAuthor && <button onClick={()=>setEditing(data.index)} className='Edit'><img className='Ed' src='/assets/edit.svg'/> Edit</button>

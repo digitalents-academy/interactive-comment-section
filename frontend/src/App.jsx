@@ -6,9 +6,11 @@ const Username = Data.currentUser.name//Temporary
 
 import MessageComp from './components/Message'
 import Send from './components/Send'
+import DeleteModal from './components/Delete'
 
 const App = () => {
   const [messages, setMessages] = useState(Data.comments)
+  const [del, setDel] = useState(null)
 
   /*useEffect(()=>{
       API.GetChat().then(res=>{
@@ -23,6 +25,14 @@ const App = () => {
     return false
   }
 
+  function handleDel(ID) {
+    setDel(ID)
+  }
+
+  function Delete(){
+    setDel(null)
+  }
+
   const MappedMessages = messages.map((msg) => {
       //big boi comment & reply tree
       let Replies = null
@@ -31,6 +41,7 @@ const App = () => {
         Replies = msg.children.map(reply => <MessageComp
             isAuthor={getAuth(reply.user.name)}
             data={reply}
+            handleDel={handleDel}
             key={reply.index}
           />
         )
@@ -41,6 +52,7 @@ const App = () => {
           <MessageComp 
             isAuthor={getAuth(msg.user.name)} 
             data={msg}
+            handleDel={handleDel}
             key={msg.index}
           />
           {
@@ -61,6 +73,11 @@ const App = () => {
 
   return (
     <div className='Room'>
+      {
+        del && <DeleteModal
+          onFinish={Delete}
+        />
+      }
       {MappedMessages}
       <Send/>
     </div>
