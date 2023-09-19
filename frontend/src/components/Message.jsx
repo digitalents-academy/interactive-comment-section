@@ -39,7 +39,7 @@ export default function Message({isAuthor, data}){
                         {
                             isAuthor && <p className='youTag'>you</p>
                         }
-                        <p className='Time'>{UnixToGuess(data.createdAt)}</p>
+                        <p className='Time'>{UnixToGuess(data.timestamp)}</p>
                     </div>
 
                 </div>
@@ -62,7 +62,7 @@ export default function Message({isAuthor, data}){
                 />
                 }
                 {
-                    !editing && <p className='Text'>{data.replyingTo && <span className='Tag'>@{data.replyingTo}</span>} {data.content}</p>
+                    !editing && <p className='Text'>{data.content}</p>
                 }
             </div>
             {
@@ -74,3 +74,5 @@ export default function Message({isAuthor, data}){
         </div>
     )
 }
+
+//{data.replyingTo && <span className='Tag'>@{data.replyingTo}</span>} 
