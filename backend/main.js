@@ -165,11 +165,11 @@ router.get("/api/user/logout", async ctx => {
 		return;
 	}
 	const user = sessions[token];
+	await ctx.cookies.delete("BearerToken");
 	if (!user) {
 		serveError(ctx, 403, "invalid session");
 		return;
 	}
-	await ctx.cookies.delete("BearerToken");
 	delete sessions[user.token];
 	user.regenerateToken();
 	ctx.response.body = { success: true };
