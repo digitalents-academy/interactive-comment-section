@@ -135,19 +135,19 @@ router.post("/api/user/new", async ctx => {
 	ctx.response.body = { success: true, user: user.serializeUser() };
 });
 
-router.post("/api/user/login", async ctx => {
+router.post("/api/user/login", async (ctx, next) => {
 	ctx.response.type = "application/json";
 	const body = await checkBody(ctx, "json");
 	if (body === null)
-		return;
+		return next();
 	const user = chat.users[body.name];
 	if (!user) {
 		serveError(ctx, 404, "no such user");
-		return;
+		return next();
 	}
 	if (body.pwhash !== user.pwhash) {
 		serveError(ctx, 403, "invalid password");
-		return;
+		return next();
 	}
 	await ctx.cookies.set("BearerToken", user.token);
 	sessions[user.token] = user;
