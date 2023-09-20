@@ -198,6 +198,10 @@ if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
 	Deno.mkdirSync(config.pfp_path);
 }
 
+svr.use((ctx, next) => {
+	ctx.response.headers.set("Access-Control-Allow-Origin", "localhost:*");
+	next();
+});
 svr.use(router.routes());
 svr.use(router.allowedMethods());
 svr.use((ctx, next) => {
