@@ -26,9 +26,11 @@ export function base64valid(a) {
 }
 
 export function base64(a) {
+	if (a instanceof ArrayBuffer)
+		a = new Uint8Array(a);
 	if (!a.length)
 		return "";
-	return btoa(Array.from(a).map(i =>
+	return btoa(Array.from(a, i =>
 		String.fromCharCode(i)).join(""));
 }
 
