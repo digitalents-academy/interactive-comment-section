@@ -159,6 +159,7 @@ router.post("/api/user/login", async ctx => {
 
 router.get("/api/user/logout", async ctx => {
 	ctx.response.type = "application/json";
+	logger.info("ctx.request:", ctx.request);
 	const token = await ctx.cookies.get("BearerToken");
 	if (!token) {
 		serveError(ctx, 400, "expired session");
@@ -204,7 +205,11 @@ if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
 svr.addEventListener("error", e => {
 	if (e.message === "Assertion failed")
 		return; // oak is bugged sometimes
-	logger.error(`(${e.filename}, ${e.lineno}:${e.colno}):`, e.error);
+	logger.error(e.error);
+	if (!e.stack)
+		return;
+	logger.error("Stacktrace:");
+	logger.error(e.stack.split("\n").slice(1).join("\n"));
 });
 
 svr.use(router.routes());
