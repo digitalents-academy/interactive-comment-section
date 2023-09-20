@@ -140,7 +140,7 @@ export class CryptMessageRoot extends Chat.MessageRoot {
 			this.cryptInvalid = true;
 			return;
 		} finally {
-			this.#info("successfully initialized with", this.users.length,
+			this.#info("successfully initialized with", Object.keys(this.users).length,
 				"users and", this.children.length, "root-level messages");
 		}
 	}
