@@ -205,11 +205,6 @@ svr.use((ctx, next) => {
 });
 svr.use(router.routes());
 svr.use(router.allowedMethods());
-svr.use((ctx, next) => {
-	lroute.warn("Not found:", ctx.request.url.toString());
-	ctx.response.status = 404;
-	next();
-});
 
 svr.listen({
 	secure: true,
