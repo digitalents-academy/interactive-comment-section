@@ -72,11 +72,11 @@ const svr = new Oak.Application({
 });
 const router = new Oak.Router();
 
-function stop() {
+async function stop() {
 	logger.warn("Stopping!");
 	abort.abort();
 	keyring.save();
-	chat.save();
+	await chat.save();
 }
 
 // user API
@@ -233,6 +233,14 @@ logger.info("Press CTRL+D to stop. DO NOT PRESS CTRL+C unless you want to exit u
 // Deno.listenTls and signal handlers that creates this
 // issue, because it doesn't happen in other programs.
 
-const eof = new Uint8Array(1);
-while (Deno.stdin.readSync(eof), eof[0] !== 0);
-stop();
+function wait() {
+	const eof = new Uint8Array(1);
+	Deno.stdin.read(eof).then(async _ => {
+		if (eof[0] !== 0)
+			wait();
+		await stop();
+		Deno.exit(0);
+	});
+}
+
+wait();
