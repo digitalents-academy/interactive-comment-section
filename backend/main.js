@@ -198,10 +198,10 @@ if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
 	Deno.mkdirSync(config.pfp_path);
 }
 
-svr.use((ctx, next) => {
+svr.use(async (ctx, next) => {
 	ctx.response.headers.set("Access-Control-Allow-Origin", "*");
 	ctx.response.headers.set("Access-Control-Allow-Headers", "*");
-	next();
+	await next();
 });
 svr.use(router.routes());
 svr.use(router.allowedMethods());
