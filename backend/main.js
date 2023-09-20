@@ -66,10 +66,7 @@ await chat.cryptReady;
 const sessions = {};
 
 const keyring = new Keyring(config.cookie_keyring, config.keyring_size);
-const svr = new Oak.Application({
-	keys: keyring.keys,
-	logErrors: false
-});
+const svr = new Oak.Application({ keys: keyring.keys });
 const router = new Oak.Router();
 
 async function stop() {
@@ -201,16 +198,6 @@ if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
 	logger.info("Creating profile picture directory");
 	Deno.mkdirSync(config.pfp_path);
 }
-
-svr.addEventListener("error", e => {
-	if (e.message === "Assertion failed")
-		return; // oak is bugged sometimes
-	logger.error(e.error);
-	if (!e.stack)
-		return;
-	logger.error("Stacktrace:");
-	logger.error(e.stack.split("\n").slice(1).join("\n"));
-});
 
 svr.use(router.routes());
 svr.use(router.allowedMethods());
