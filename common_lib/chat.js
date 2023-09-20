@@ -148,6 +148,13 @@ export class Message {
 		};
 	}
 
+	path() {
+		const p = [this.index];
+		for (let m = this.up; m.root !== undefined; m = m.up)
+			p.unshift(m.index);
+		return p;
+	}
+
 	serializeFlat(ping = false) {
 		const msg = [{
 			index: this.index,

@@ -39,6 +39,7 @@ chat.add("doesnteggsist", 1, "I am smonk");
 
 const so = chat.serialize();
 const flatThread = chat.children[1].serializeFlat();
+const path = chat.children[1].children[0].children[0].path();
 
 console.log("Constructed normally:");
 console.log(chat);
@@ -46,6 +47,7 @@ console.log("Serialized:");
 console.log(so);
 console.log("Flat thread:");
 console.log(flatThread);
+console.log("Path:", path);
 console.log("Reconstructed:");
 console.log(new Chat.MessageRoot(so));
 // this wording makes me feel dumb
