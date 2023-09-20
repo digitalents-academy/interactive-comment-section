@@ -2,18 +2,30 @@ import PropTypes from 'prop-types';
 import PasswordInput from './PasswordInput';
 import UsernameInput from './UsernameInput';
 import Buttons from './Buttons';
+import * as util from '../../../../../common_lib/util.js'
+
 
 const Login = ({ user, pwd, setPwd, setUser, setModal, Header }) => {
 
-    const login = () => {
-        if (!isAllowed) { console.log('epic error message'); return; };
-        const profile = { username: user, password: pwd };
-        console.log('hello', profile);
+    const login = async () => {
+        if (!isAllowed) { console.log('noup'); return; };
+        const hash = await util.sha256str(pwd);
+        const obj = { name: user, pwhash: hash };
+        console.log(obj);
+        try {
+            const res = await fetch('https://localhost:8443/api/user/login', { 
+                method: 'POST',
+                body: JSON.stringify(obj), 
+                headers: { "Content-Type": "application/json" }            
+            });
+            const asd = await res.json();
+            console.log(asd);
+        }
+        catch(e) { console.log('ee', e)}
         setModal(false);
     };
 
-    const isAllowed = user.length > 1 && pwd.length > 0;
-    const color = isAllowed ? 'green' : 'hsl(212, 24%, 26%)';
+    const isAllowed = user.length > 1 && !!pwd;
 
     return (
         <div>

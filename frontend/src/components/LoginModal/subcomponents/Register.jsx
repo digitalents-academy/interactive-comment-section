@@ -4,13 +4,21 @@ import Buttons from './Buttons';
 import PropTypes from 'prop-types';
 
 const Register = ({ user, setUser, pfp, setPfp, pwd, setPwd, setModal, Header }) => {
-    const register = () => {
+    const register = async () => {
         if (!isAllowed) { console.log('no'); return; }
         const formData = new FormData();
         formData.append('png', pfp);
-        formData.append('password', pwd);
+        formData.append('pwdhash', pwd);
         formData.append('name', user);
-        console.log(formData);
+        try {
+            const res = await fetch('https://localhost:8443/api/user/new', {
+                method: 'POST',
+                body: formData
+            });
+            const a = await res.json();
+            console.log(a);
+        }
+        catch(e) { console.log('ee', e) }
         setModal(false);
     }
 
