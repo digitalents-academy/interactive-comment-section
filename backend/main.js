@@ -53,7 +53,7 @@ async function checkBody(ctx, btype) {
 	try {
 		return await ctx.request.body({type: btype}).value;
 	} catch(_) {
-		serveError(400, "invalid or missing body");
+		serveError(ctx, 400, "invalid or missing body");
 		return null;
 	}
 }
@@ -156,7 +156,6 @@ router.post("/api/user/login", async ctx => {
 
 router.get("/api/user/logout", async ctx => {
 	ctx.response.type = "application/json";
-	logger.info("ctx.request:", ctx.request);
 	const token = await ctx.cookies.get("BearerToken");
 	if (!token) {
 		serveError(ctx, 400, "expired session");
@@ -184,7 +183,7 @@ router.post("/api/pfps/:name", ctx => {
 	const path = DenoUtil.agnosticPath(config.pfp_path + "/" + ctx.params.name);
 	if (!DenoUtil.lstatSafe(path)?.isFile) {
 		ctx.response.type = "application/json";
-		serveError(404, "no such profile picture");
+		serveError(ctx, 404, "no such profile picture");
 	}
 	ctx.response.type = "image/png";
 	ctx.response.body = Deno.readFileSync(path);
