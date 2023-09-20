@@ -142,7 +142,7 @@ router.post("/api/user/login", async ctx => {
 		return;
 	const user = chat.users[body.name];
 	if (!user) {
-		serveError(ctx, 200, "no such user");
+		serveError(ctx, 404, "no such user");
 		return;
 	}
 	if (body.pwhash !== user.pwhash) {
@@ -200,6 +200,7 @@ if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
 
 svr.use((ctx, next) => {
 	ctx.response.headers.set("Access-Control-Allow-Origin", "*");
+	ctx.response.headers.set("Access-Control-Allow-Headers", "*");
 	next();
 });
 svr.use(router.routes());
