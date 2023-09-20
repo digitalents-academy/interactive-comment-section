@@ -20,7 +20,9 @@ import * as Util from './util.js';
 
 const DELETED_USER = "deleted user";
 
-function hydrateMessage(r, up, m, i) {
+// exporting because it might come in useful for individual
+// messages
+export function hydrateMessage(r, up, m, i) {
 	// r.users[m.user] should be undefined for deleted users
 	// which is fine (check Message constructor)
 	const a = new Message(r, up, i,

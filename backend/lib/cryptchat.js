@@ -32,16 +32,6 @@ async function genKeyWithIV() {
 	];
 }
 
-function hydrateMessage(r, up, m, i) {
-	// r.users[m.user] should be undefined for deleted users
-	// which is fine (check Message constructor from ../common_lib/chat.js)
-	const a = new Chat.Message(r, up, i,
-		r.users[m.user], m.votes, m.content, m.timestamp);
-	for (let i = 0; i < m.children.length; i++)
-		a.children.push(hydrateMessage(r, a, m.children[i], i));
-	return a;
-}
-
 export class CryptMessageRoot extends Chat.MessageRoot {
 	constructor(path) {
 		super();
@@ -78,7 +68,7 @@ export class CryptMessageRoot extends Chat.MessageRoot {
 			throw new TypeError("not a serialized MessageRoot");
 		this.users = Object.fromEntries(Object.entries(obj.users).map(e =>
 			[e[0], new CryptUser(e[0], e[1].png, e[1].pwhash)]));
-		this.children = obj.chat.map((m, i) => hydrateMessage(this, this, m, i))
+		this.children = obj.chat.map((m, i) => Chat.hydrateMessage(this, this, m, i))
 	}
 
 	// override
@@ -164,9 +154,7 @@ export class CryptMessageRoot extends Chat.MessageRoot {
 		};
 	}
 
-	// if this returns non-null, you should destroy this
-	// object and make a new one, using the elements of
-	// the returned array as arguments to the new one.
+	// override
 	async triggerModify() {
 		this.cryptModifyCount++;
 		if (this.cryptModifyCount < this.cryptSaveThreshold)
@@ -206,6 +194,7 @@ export class CryptUser extends Chat.User {
 		return super.serialize();
 	}
 
+	// override
 	serialize() {
 		return {
 			...super.serialize(),
