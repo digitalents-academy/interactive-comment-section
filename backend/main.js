@@ -199,7 +199,7 @@ if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
 }
 
 svr.use((ctx, next) => {
-	ctx.response.headers.set("Access-Control-Allow-Origin", "localhost:*");
+	ctx.response.headers.set("Access-Control-Allow-Origin", "*");
 	next();
 });
 svr.use(router.routes());
