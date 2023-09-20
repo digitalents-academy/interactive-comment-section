@@ -204,7 +204,7 @@ if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
 svr.addEventListener("error", e => {
 	if (e.message === "Assertion failed")
 		return; // oak is bugged sometimes
-	logger.error(e.error);
+	logger.error(`(${e.filename}, ${e.lineno}:${e.colno}):`, e.error);
 });
 
 svr.use(router.routes());
