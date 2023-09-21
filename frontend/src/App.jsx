@@ -75,8 +75,10 @@ const App = () => {
   return (
     <div className='Room'>
       {
-        del && <DeleteModal
+        del !== null && <DeleteModal
           onFinish={Delete}
+          test={()=>{console.log(del)}}
+          cancel={()=>{setDel(null)}}
         />
       }
       {MappedMessages}

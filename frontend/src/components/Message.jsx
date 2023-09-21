@@ -46,7 +46,7 @@ export default function Message({isAuthor, data, handleDel}){
 
                 <div className='Controls'>
                     {
-                        isAuthor && <button onClick={handleDel(data.index)} className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
+                        isAuthor && <button onClick={() => handleDel(data.index)} className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
                     }
                     {
                         isAuthor && <button onClick={()=>setEditing(data.index)} className='Edit'><img className='Ed' src='/assets/edit.svg'/> Edit</button>
