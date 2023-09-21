@@ -1,15 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import MessageComp from './components/Message'
 import Modal from './components/LoginModal'
+//import API from './controllers/api' //GetChat (Get), Chat (Create), Update, Delete
 import Data from '../../data.json'//Change for real data(?)
 import Send from './components/Send'
 
 import './css/App.css'
 
-const Username = Data.currentUser.username//Temporary
+const Username = Data.currentUser.name//Temporary
+import DeleteModal from './components/Delete'
 
 const App = () => {
   const [messages, setMessages] = useState(Data.comments)
+  const [del, setDel] = useState(null)
+
+  /*useEffect(()=>{
+      API.GetChat().then(res=>{
+        setMessages(res)
+      })
+  })*/
   const [modal, setModal] = useState(true);
 
   function getAuth(auth){ //Change when we have epic data
@@ -19,15 +28,24 @@ const App = () => {
     return false
   }
 
+  function handleDel(ID) {
+    setDel(ID)
+  }
+
+  function Delete(){
+    setDel(null)
+  }
+
   const MappedMessages = messages.map((msg) => {
       //big boi comment & reply tree
       let Replies = null
       
-      if (msg.replies.length > 0) {
-        Replies = msg.replies.map(reply => <MessageComp
-            isAuthor={getAuth(reply.user.username)}
+      if (msg.children.length > 0) {
+        Replies = msg.children.map(reply => <MessageComp
+            isAuthor={getAuth(reply.user.name)}
             data={reply}
-            key={reply.id}
+            handleDel={handleDel}
+            key={reply.index}
           />
         )
       }
@@ -35,9 +53,10 @@ const App = () => {
       return(
         <div className='MessageTree'>
           <MessageComp 
-            isAuthor={getAuth(msg.user.username)} 
+            isAuthor={getAuth(msg.user.name)} 
             data={msg}
-            key={msg.id}
+            handleDel={handleDel}
+            key={msg.index}
           />
           {
             Replies && 
@@ -57,6 +76,11 @@ const App = () => {
 
   return (
     <div className='Room'>
+      {
+        del && <DeleteModal
+          onFinish={Delete}
+        />
+      }
       {MappedMessages}
       {modal && <Modal setModal={setModal} />}
     </div>

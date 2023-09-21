@@ -2,9 +2,11 @@ import { useState } from 'react'
 import Edit from '../components/Edit'
 import Reply from '../components/Reply'
 
-//createdAt will be a unix code, we'll convert it into how long ago it was sent
+import { UnixToGuess } from '../util/UnixConvert.js' //Unix timestamp converter
+//UnixToGuess(UnixTimestamp) -> "# X(s) Ago" 
+//^ X = "seconds", "minutes", "hours", "days", "weeks", "months" ^
 
-export default function Message({isAuthor, data}){
+export default function Message({isAuthor, data, handleDel}){
     
     const [editing, setEditing] = useState(null)
     const [replying, setReplying] = useState(null)
@@ -25,32 +27,32 @@ export default function Message({isAuthor, data}){
 
                 <div className='Vote'>
                     <img className='Plus CTRL' src='/assets/plus.svg'/>
-                    <p className='Votes'>{data.score}</p>
+                    <p className='Votes'>{data.votes}</p>
                     <img className='Minus CTRL' src='/assets/minus.svg'/>
                 </div>
 
                 <div className='MessageBody'>
 
                     <div className='Title'>
-                        <img className='Pfp' src={data.user.image.png}/>
-                        <p className='AuthorName'>{data.user.username}</p>
+                        <img className='Pfp' src={data.user.png}/>
+                        <p className='AuthorName'>{data.user.name}</p>
                         {
                             isAuthor && <p className='youTag'>you</p>
                         }
-                        <p className='Time'>{data.createdAt}</p>
+                        <p className='Time'>{UnixToGuess(data.timestamp)}</p>
                     </div>
 
                 </div>
 
                 <div className='Controls'>
                     {
-                        isAuthor && <button className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
+                        isAuthor && <button onClick={handleDel(data.index)} className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
                     }
                     {
-                        isAuthor && <button onClick={()=>setEditing(data.id)} className='Edit'><img className='Ed' src='/assets/edit.svg'/> Edit</button>
+                        isAuthor && <button onClick={()=>setEditing(data.index)} className='Edit'><img className='Ed' src='/assets/edit.svg'/> Edit</button>
                     }
                     {
-                        !isAuthor && <button onClick={()=>setReplying(data.id)} className='Reply'><img className='Rep' src='/assets/reply.svg'/> Reply</button>
+                        !isAuthor && <button onClick={()=>setReplying(data.index)} className='Reply'><img className='Rep' src='/assets/reply.svg'/> Reply</button>
                     }
                 </div>
                 {
@@ -60,7 +62,7 @@ export default function Message({isAuthor, data}){
                 />
                 }
                 {
-                    !editing && <p className='Text'>{data.replyingTo && <span className='Tag'>@{data.replyingTo}</span>} {data.content}</p>
+                    !editing && <p className='Text'>{data.content}</p>
                 }
             </div>
             {
@@ -72,3 +74,5 @@ export default function Message({isAuthor, data}){
         </div>
     )
 }
+
+//{data.replyingTo && <span className='Tag'>@{data.replyingTo}</span>} 
