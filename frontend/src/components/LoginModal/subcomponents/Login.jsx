@@ -3,26 +3,31 @@ import PasswordInput from './PasswordInput';
 import UsernameInput from './UsernameInput';
 import Buttons from './Buttons';
 import * as util from '../../../../../common_lib/util.js'
-
+import { useDispatch } from 'react-redux';
+import { setNoti } from '../../../reducers/notiReducer';
 
 const Login = ({ user, pwd, setPwd, setUser, setModal, Header }) => {
 
+    const dispatch = useDispatch()
+
     const login = async () => {
-        if (!isAllowed) { console.log('noup'); return; };
+        if (!isAllowed) { console.log('noup'); return; }
         const hash = await util.sha256str(pwd);
         const obj = { name: user, pwhash: hash };
-        console.log(obj);
         try {
-            const res = await fetch('https://localhost:8443/api/user/login', { 
+            const res = await fetch('https://localhost:8443/api/user/login', {
                 method: 'POST',
                 body: JSON.stringify(obj), 
                 headers: { "Content-Type": "application/json" }            
             });
-            const asd = await res.json();
-            console.log(asd);
+            const result = await res.json();
+            if (!result.success) {
+                dispatch(setNoti(`Error: ${result?.error}!`));
+                return;
+            }
+            setModal(false);
         }
-        catch(e) { console.log('ee', e)}
-        setModal(false);
+        catch(e) { dispatch(setNoti(String(e))); }
     };
 
     const isAllowed = user.length > 1 && !!pwd;

@@ -4,6 +4,7 @@ import Modal from './components/LoginModal'
 //import API from './controllers/api' //GetChat (Get), Chat (Create), Update, Delete
 import Data from '../../data.json'//Change for real data(?)
 import Send from './components/Send'
+import Notification from './components/Notification'
 
 import './css/App.css'
 
@@ -76,11 +77,7 @@ const App = () => {
 
   return (
     <div className='Room'>
-      {
-        del && <DeleteModal
-          onFinish={Delete}
-        />
-      }
+      <Notification />
       {MappedMessages}
       {modal && <Modal setModal={setModal} />}
     </div>

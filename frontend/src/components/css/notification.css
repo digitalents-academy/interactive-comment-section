@@ -1,0 +1,31 @@
+.notification {
+  background-color: white;
+  border: 1px solid black;
+  position: absolute;
+  top: 30px;
+  margin: 0 auto;
+  min-width: 220px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  z-index: 99;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 23px -3px rgba(0, 0, 0, 0.7);
+}
+.notification h3 {
+  color: black;
+}
+
+@keyframes thing {
+  0% {
+    transform: translateY(-100px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+.notification:hover {
+  cursor: pointer;
+  filter: opacity(80%);
+}
