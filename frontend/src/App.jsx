@@ -43,7 +43,7 @@ const App = () => {
         Replies = msg.children.map(reply => <MessageComp
             isAuthor={getAuth(reply.user.name)}
             data={reply}
-            del={()=>{handleDel(reply.index)}}
+            del={handleDel}
             key={reply.index}
           />
         )
@@ -54,7 +54,7 @@ const App = () => {
           <MessageComp 
             isAuthor={getAuth(msg.user.name)}
             data={msg}
-            del={()=>{handleDel(reply.index)}}
+            del={handleDel}
             key={msg.index}
           />
           {

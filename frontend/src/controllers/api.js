@@ -1,4 +1,3 @@
-/*
 import axios from 'axios'
 
 const baseURL='https://localhost:8443/api/chat'
@@ -36,4 +35,3 @@ export default{
 
     Delete
 }
-*/
