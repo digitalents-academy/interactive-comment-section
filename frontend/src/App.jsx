@@ -7,6 +7,7 @@ const Username = Data.currentUser.name//Temporary
 import MessageComp from './components/Message'
 import Send from './components/Send'
 import DeleteModal from './components/Delete'
+import {MessageRoot, Message, User} from '../../common_lib/chat' //I've no idea how to use classes for anything, so I'm learning lol
 
 const App = () => {
   const [messages, setMessages] = useState(Data.comments)
@@ -79,6 +80,7 @@ const App = () => {
         del !== null && <DeleteModal
           onFinish={Delete}
           cancel={() => {setDel(null)}}
+          test={()=>{console.log(del)}}
         />
       }
       {MappedMessages}
