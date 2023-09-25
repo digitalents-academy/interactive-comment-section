@@ -4,6 +4,7 @@ import Buttons from './Buttons';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { setNoti } from '../../../reducers/notiReducer';
+import * as util from '../../../../../common_lib/util.js'
 
 const Register = ({ user, setUser, pfp, setPfp, pwd, setPwd, setModal, Header }) => {
     const dispatch = useDispatch();
@@ -12,7 +13,7 @@ const Register = ({ user, setUser, pfp, setPfp, pwd, setPwd, setModal, Header })
         if (!isAllowed) { dispatch(setNoti('...')); return; }
         const formData = new FormData();
         formData.append('png', pfp);
-        formData.append('pwhash', pwd);
+        formData.append('pwhash', await util.sha256str(pwd));
         formData.append('name', user);
         try {
             const res = await fetch('https://localhost:8443/api/user/new', {
