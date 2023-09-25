@@ -240,6 +240,27 @@ router.post("/api/comment/modify", async ctx => {
 	ctx.response.body = { success: true };
 });
 
+router.post("/api/comment/delete", async ctx => {
+	ctx.response.type = "application/json";
+	const user = await checkUserSession(ctx, sessions);
+	if (user === null)
+		return;
+	const body = await checkBody(ctx, "json");
+	if (body === null)
+		return;
+	const m = chat.getMessageByPath(body.target);
+	if (m === null) {
+		serveError(ctx, 404, "no such message");
+		return;
+	}
+	if (m.user.name !== user.name) {
+		serveError(ctx, 403, "you are not allowed to remove this message");
+		return;
+	}
+	m.up.remove(m.index);
+	ctx.response.body = { success: true };
+});
+
 // profile pictures
 router.post("/api/pfps/:name", ctx => {
 	const path = DenoUtil.agnosticPath(config.pfp_path + "/" + ctx.params.name);
