@@ -183,7 +183,7 @@ export class CryptUser extends Chat.User {
 		if (typeof(h) !== "string")
 			throw new TypeError("password must be a base64 string");
 		this.pwhash = h;
-		this.token = this.regenerateToken();
+		this.regenerateToken();
 	}
 
 	regenerateToken() {

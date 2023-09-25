@@ -209,9 +209,9 @@ router.post("/api/comment/new", async ctx => {
 	const body = await checkBody(ctx, "json");
 	if (body === null)
 		return;
-	const m = chat.getMessageByPath(body.target);
+	const m = body.target?.length ? chat.getMessageByPath(body.target) : chat;
 	if (m === null) {
-		serveError(ctx, 404, "no such message");
+		serveError(ctx, 404, "cannot reply to nonexistent message");
 		return;
 	}
 	m.add(user.name, 1, body.content);
