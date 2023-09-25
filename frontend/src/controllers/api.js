@@ -1,15 +1,15 @@
 import axios from 'axios'
 
-const baseURL='https://localhost:8443/api/chat'
+const baseURL='https://localhost:8443/api/comment'
 
 //GET
-async function GetChat(){
-    const Req = axios.get(baseURL)
+async function GetComments(){
+    const Req = axios.get(baseURL+'/all')
     return Req.then(res=>res.data)
 }
 
 //POST
-async function Chat(obj){
+async function Comment(obj){
     const Req = axios.post(baseURL, obj)
     return Req.then(res=>res.data)
 }
@@ -22,14 +22,14 @@ async function Update(id, obj){
 
 //DEL
 async function Delete(id){
-    const Req = axios.delete(baseURL+'/'+id)
+    const Req = axios.delete(baseURL+'/delete'+id)
     return Req.then(res=>res.data)
 }
 
 export default{
-    GetChat,
+    GetComments,
 
-    Chat,
+    Comment,
 
     Update,
 
