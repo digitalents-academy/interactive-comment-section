@@ -262,7 +262,7 @@ router.post("/api/comment/delete", async ctx => {
 });
 
 // profile pictures
-router.post("/api/pfps/:name", ctx => {
+router.post("/api/pic/:name", ctx => {
 	const path = DenoUtil.agnosticPath(config.pfp_path + "/" + ctx.params.name);
 	if (!DenoUtil.lstatSafe(path)?.isFile) {
 		ctx.response.type = "application/json";
