@@ -48,6 +48,8 @@ console.log(so);
 console.log("Flat thread:");
 console.log(flatThread);
 console.log("Path:", path);
+console.log("Message from path:");
+console.log(chat.getMessageByPath(path));
 console.log("Reconstructed:");
 console.log(new Chat.MessageRoot(so));
 // this wording makes me feel dumb

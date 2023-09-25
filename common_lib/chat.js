@@ -73,6 +73,16 @@ export class MessageRoot {
 		return this.triggerModify();
 	}
 
+	getMessageByPath(p) {
+		let m = this;
+		for (let i = 0; i < p.length; i++) {
+			m = m.children[p[i]];
+			if (!m)
+				return null;
+		}
+		return m;
+	}
+
 	remove(i) {
 		if (i >= this.children.length)
 			throw new RangeError("message index out of bounds");

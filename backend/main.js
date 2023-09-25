@@ -58,6 +58,21 @@ async function checkBody(ctx, btype) {
 	}
 }
 
+async function checkUserSession(ctx, s) {
+	const token = await ctx.cookies.get("BearerToken");
+	if (!token) {
+		serveError(ctx, 403, "expired session");
+		return null;
+	}
+	const user = s[token];
+	if (!user) {
+		serveError(ctx, 403, "invalid session");
+		await ctx.cookies.delete("BearerToken");
+		return null;
+	}
+	return user;
+}
+
 const abort = new AbortController();
 
 const chat = new CC.CryptMessageRoot(config.chat_path);
@@ -89,7 +104,6 @@ router.get("/api/user/exists", async ctx => {
 	ctx.response.body = { success: true, exists: false };
 });
 
-// auth
 router.post("/api/user/new", async ctx => {
 	ctx.response.type = "application/json";
 	const body = await checkBody(ctx, "form-data");
@@ -156,26 +170,70 @@ router.post("/api/user/login", async ctx => {
 
 router.get("/api/user/logout", async ctx => {
 	ctx.response.type = "application/json";
-	const token = await ctx.cookies.get("BearerToken");
-	if (!token) {
-		serveError(ctx, 400, "expired session");
+	const user = await checkUserSession(ctx, sessions);
+	if (user === null)
 		return;
-	}
-	const user = sessions[token];
 	await ctx.cookies.delete("BearerToken");
-	if (!user) {
-		serveError(ctx, 403, "invalid session");
-		return;
-	}
 	delete sessions[user.token];
 	user.regenerateToken();
 	ctx.response.body = { success: true };
 });
 
 // comments API
-router.get("/api/comment/list", ctx => {
+router.get("/api/comment/all", ctx => {
 	ctx.response.type = "application/json";
 	ctx.response.body = chat.serializeUser();
+});
+
+router.post("/api/comment/single", async ctx => {
+	ctx.response.type = "application/json";
+	const body = await checkBody(ctx, "json");
+	if (body === null)
+		return;
+	const m = chat.getMessageByPath(body.target);
+	if (m === null) {
+		serveError(ctx, 404, "no such message");
+		return;
+	}
+	ctx.response.body = { success: true, message: m.serialize() };
+});
+
+router.post("/api/comment/new", async ctx => {
+	ctx.response.type = "application/json";
+	const user = await checkUserSession(ctx, sessions);
+	if (user === null)
+		return;
+	const body = await checkBody(ctx, "json");
+	if (body === null)
+		return;
+	const m = chat.getMessageByPath(body.target);
+	if (m === null) {
+		serveError(ctx, 404, "no such message");
+		return;
+	}
+	m.add(user.name, 1, body.content);
+	ctx.response.body = { success: true, message: m.children.at(-1).serialize() };
+});
+
+router.post("/api/comment/modify", async ctx => {
+	ctx.response.type = "application/json";
+	const user = await checkUserSession(ctx, sessions);
+	if (user === null)
+		return;
+	const body = await checkBody(ctx, "json");
+	if (body === null)
+		return;
+	const m = chat.getMessageByPath(body.target);
+	if (m === null) {
+		serveError(ctx, 404, "no such message");
+		return;
+	}
+	if (m.user.name !== user.name) {
+		serveError(ctx, 403, "you are not allowed to edit this message");
+		return;
+	}
+	m.text = body.content;
+	ctx.response.body = { success: true };
 });
 
 // profile pictures
