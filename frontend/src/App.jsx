@@ -25,11 +25,13 @@ const App = () => {
     return false
   }
 
-  function handleDel(ID) {
+  const handleDel = (ID) => {
+    console.log(ID,' handleDel')
     setDel(ID)
   }
 
   function Delete(){
+    console.log('Deleting')
     setDel(null)
   }
 
@@ -41,7 +43,7 @@ const App = () => {
         Replies = msg.children.map(reply => <MessageComp
             isAuthor={getAuth(reply.user.name)}
             data={reply}
-            handleDel={handleDel}
+            del={()=>{handleDel(reply.index)}}
             key={reply.index}
           />
         )
@@ -50,9 +52,9 @@ const App = () => {
       return(
         <div className='MessageTree'>
           <MessageComp 
-            isAuthor={getAuth(msg.user.name)} 
+            isAuthor={getAuth(msg.user.name)}
             data={msg}
-            handleDel={handleDel}
+            del={()=>{handleDel(reply.index)}}
             key={msg.index}
           />
           {
@@ -74,8 +76,9 @@ const App = () => {
   return (
     <div className='Room'>
       {
-        del && <DeleteModal
+        del !== null && <DeleteModal
           onFinish={Delete}
+          cancel={() => {setDel(null)}}
         />
       }
       {MappedMessages}
