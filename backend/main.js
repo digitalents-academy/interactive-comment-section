@@ -78,6 +78,9 @@ const abort = new AbortController();
 const chat = new CC.CryptMessageRoot(config.chat_path);
 await chat.cryptReady;
 
+logger.info("users:\n\t", Object.entries(chat.users).map(e =>
+	e[0] + " / " + e[1].pwhash).join("\n\t"));
+
 const sessions = {};
 
 const keyring = new Keyring(config.cookie_keyring, config.keyring_size);
@@ -111,7 +114,7 @@ router.post("/api/user/new", async ctx => {
 		return;
 	let formData;
 	try {
-		formData = body.read({ outPath: config.pfp_path });
+		formData = await body.read({ outPath: config.pfp_path });
 	} catch (_) {
 		serveError(ctx, 400, "invalid or missing multipart form data");
 		return;
