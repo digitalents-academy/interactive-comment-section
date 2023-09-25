@@ -1,18 +1,23 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { clearNoti } from '../reducers/notiReducer';
 import './css/notification.css';
 
-//todo: notification timeout, refresh on same message and maybe notification type,
-//i've tried timeouts and other stuff but something spooky is going on. (or i am stupid (likely!))
 const Notification = () => {
-
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
+    const ref = useRef(null);
     const noti = useSelector(x => x.notification);
+    const current = noti.current;
 
-    if (noti === '') return null;
+    useEffect(() => {
+        if (ref.timer) clearTimeout(ref.timer);
+        if (current) { ref.timer = setTimeout(() => dispatch(clearNoti()), 2500); }
+    }, [noti, dispatch, current]);
+
+    if (!current) return null;
     return (
-        <div className={`notification`} onClick={() => dispatch(clearNoti())}>
-            <h3>{noti}</h3>
+        <div className='notification' onClick={() => dispatch(clearNoti())}>
+            <h3>{current}</h3>
         </div>
     );
 };

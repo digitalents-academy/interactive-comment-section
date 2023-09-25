@@ -7,11 +7,10 @@ import { useDispatch } from 'react-redux';
 import { setNoti } from '../../../reducers/notiReducer';
 
 const Login = ({ user, pwd, setPwd, setUser, setModal, Header }) => {
-
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
     const login = async () => {
-        if (!isAllowed) { console.log('noup'); return; }
+        if (!isAllowed) { dispatch(setNoti('...')); return; }
         const hash = await util.sha256str(pwd);
         const obj = { name: user, pwhash: hash };
         try {
@@ -27,7 +26,7 @@ const Login = ({ user, pwd, setPwd, setUser, setModal, Header }) => {
             }
             setModal(false);
         }
-        catch(e) { dispatch(setNoti(String(e))); }
+        catch(e) { dispatch(setNoti(String(e))); console.log(e); }
     };
 
     const isAllowed = user.length > 1 && !!pwd;

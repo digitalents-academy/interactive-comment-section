@@ -2,32 +2,40 @@ import PasswordInput from './PasswordInput';
 import UsernameInput from './UsernameInput';
 import Buttons from './Buttons';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { setNoti } from '../../../reducers/notiReducer';
 
 const Register = ({ user, setUser, pfp, setPfp, pwd, setPwd, setModal, Header }) => {
+    const dispatch = useDispatch();
+
     const register = async () => {
-        if (!isAllowed) { console.log('no'); return; }
+        if (!isAllowed) { dispatch(setNoti('...')); return; }
         const formData = new FormData();
         formData.append('png', pfp);
-        formData.append('pwdhash', pwd);
+        formData.append('pwhash', pwd);
         formData.append('name', user);
         try {
             const res = await fetch('https://localhost:8443/api/user/new', {
                 method: 'POST',
                 body: formData
             });
-            const a = await res.json();
-            console.log(a);
+            const result = await res.json();
+            if (!result.success) {
+                dispatch(setNoti(`Error: ${result?.error}!`));
+                return;
+            }
+            setModal(false);
         }
-        catch(e) { console.log('ee', e) }
-        setModal(false);
+        catch(e) { 
+            dispatch(setNoti(String(e))); console.log(e);
+        }
     }
 
     const doSomething = (e) => { 
-        e.target.files[0] && setPfp(e.target.files[0]); 
+        e.target.files[0] && setPfp(e.target.files[0]);
     };
 
-    const isAllowed = user.length > 1 && pwd.length > 0;
-    const color = isAllowed ? 'green' : 'hsl(212, 24%, 26%)';
+    const isAllowed = user.length > 1 && pwd.length && pfp;
 
     return (
         <div>
