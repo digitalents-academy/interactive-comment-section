@@ -27,7 +27,7 @@ const Register = ({ user, setUser, pfp, setPfp, pwd, setPwd, setModal, Header })
             setModal(false);
         }
         catch(e) { 
-            dispatch(setNoti(String(e))); console.log(e);
+            dispatch(setNoti({msg: String(e), type: 'e'})); console.log(e);
         }
     }
 

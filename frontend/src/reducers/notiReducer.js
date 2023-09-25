@@ -1,12 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+
+const initial = { msg: '', thing: false, type: '' }
 const notiSlice = createSlice({  
-    name: 'notification', initialState: { current: '', thing: false }, reducers: {    
+    name: 'notification', initialState: initial, reducers: {    
         setNoti(state, action) {
-            return { current: action.payload, thing: !state.thing };   
+            const input = action.payload;
+            if (typeof input === 'string') return { msg: input, thing: !state.thing, type: '' };
+            if (typeof input === 'object' && 'type' in input && 'msg' in input) {
+                return { msg: input.msg, thing: !state.thing, type: input.type }
+            };
+            return {msg: 'what?', type: '', thing: !state.thing};
         },
+        
         clearNoti(state) {
-            return { current: '', thing: !state.thing};
+            return { msg: '', thing: !state.thing, type: ''};
         }
     }
 })
