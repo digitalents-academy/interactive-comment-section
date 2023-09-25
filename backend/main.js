@@ -78,8 +78,9 @@ const abort = new AbortController();
 const chat = new CC.CryptMessageRoot(config.chat_path);
 await chat.cryptReady;
 
-logger.info("users:\n\t", Object.entries(chat.users).map(e =>
-	e[0] + " / " + e[1].pwhash).join("\n\t"));
+if (Object.keys(chat.users).length)
+	logger.info("users:\n\t", Object.entries(chat.users).map(e =>
+		e[0] + " / " + e[1].pwhash).join("\n\t"));
 
 const sessions = {};
 
