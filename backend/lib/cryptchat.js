@@ -73,10 +73,10 @@ export class CryptMessageRoot extends Chat.MessageRoot {
 
 	// override
 	addUser(n, p, h) {
-		if (!Util.base64valid(h)) {
-			this.#error("addUser(): invalid base64 password hash");
-			return;
-		}
+		if (!Util.base64valid(h))
+			throw new TypeError("invalid base64 password hash");
+		if (Util.unbase64(h).length !== 32)
+			throw new TypeError("not a 256-bit hash");
 		this.users[n] = new CryptUser(n, p, h);
 		this.triggerModify();
 		return this.users[n];
@@ -120,11 +120,11 @@ export class CryptMessageRoot extends Chat.MessageRoot {
 			return;
 		}
 		if (!enc?.key?.length) {
-			this.#warn("no key, initialized empty");
+			this.#warn("no key");
 			return;
 		}
 		if (!enc?.iv?.length) {
-			this.#warn("no IV, initialized empty");
+			this.#warn("no IV");
 			return;
 		}
 		try {
