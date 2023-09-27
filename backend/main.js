@@ -63,7 +63,7 @@ async function checkBody(ctx, btype) {
 async function checkUserSession(ctx, s) {
 	const token = await ctx.cookies.get("BearerToken");
 	if (!token) {
-		serveError(ctx, 403, "expired session");
+		serveError(ctx, 403, "authorization required");
 		return null;
 	}
 	const user = s[token];
@@ -217,7 +217,7 @@ router.post("/api/comment/new", async ctx => {
 		serveError(ctx, 404, "cannot reply to nonexistent message");
 		return;
 	}
-	m.add(user.name, 1, body.content);
+	m.add(user.name, body.content);
 	ctx.response.body = { success: true, message: m.children.at(-1).serialize() };
 });
 
