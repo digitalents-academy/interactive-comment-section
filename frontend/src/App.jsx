@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import Header from './components/Header'
 import MessageComp from './components/Message'
 import Modal from './components/LoginModal'
 //import API from './controllers/api' //GetChat (Get), Chat (Create), Update, Delete
@@ -77,6 +78,7 @@ const App = () => {
 
   return (
     <div className='Room'>
+      <Header />
       <Notification />
       {MappedMessages}
       {modal && <Modal setModal={setModal} />}
