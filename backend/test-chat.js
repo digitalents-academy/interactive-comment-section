@@ -28,12 +28,17 @@ chat.addUser("cirno", "./pfps/iceicebaby.png");
 chat.addUser("barrierpolice", "./pfps/yukari.png");
 chat.addUser("suika", "./pfps/shithead.png");
 
-chat.add("marisa", 3, "master-spark rocks, cirno sucks da ze");
-chat.add("cirno", -1, "this witch is just jealous of my mad-rad ice magic 9");
+chat.add("marisa", "master-spark rocks, cirno sucks da ze");
+chat.children[0].upvote("reimu");
+chat.children[0].upvote("suika");
+chat.add("cirno", "this witch is just jealous of my mad-rad ice magic 9");
+chat.children[1].downvote("reimu");
+chat.children[1].downvote("marisa");
 
-chat.children[1].add("reimu", 1, "you got owned before. cope + mald + chew on ice");
-chat.children[1].children[0].add("barrierpolice", 1, "everyone calm down lmao", 0);
-chat.children[1].add("marisa", 0, "take the L");
+chat.children[1].add("reimu", "you got owned before. cope + mald + chew on ice");
+chat.children[1].children[0].add("barrierpolice", "everyone calm down lmao", 0);
+chat.children[1].add("marisa", "take the L");
+chat.children[1].children[1].upvote("reimu");
 
 chat.add("doesnteggsist", 1, "I am smonk");
 
@@ -54,4 +59,4 @@ console.log("Reconstructed:");
 console.log(new Chat.MessageRoot(so));
 // this wording makes me feel dumb
 console.log("Votes of the list of top-level messages sorted by votes:");
-console.log(chat.byVotes().map(m => m.votes));
+console.log(chat.byScore().map(m => m.score));

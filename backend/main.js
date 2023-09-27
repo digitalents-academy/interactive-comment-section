@@ -23,6 +23,8 @@ import Logger from '../common_lib/logger.js';
 import * as DenoUtil from './lib/deno_util.js';
 import * as CC from './lib/cryptchat.js';
 
+const JSON_MIME = "application/json";
+
 const config = {
 	svr_port: 8443,
 	chat_path: DenoUtil.agnosticPath("./comments.json"),
@@ -97,7 +99,7 @@ async function stop() {
 
 // user API
 router.get("/api/user/exists", async ctx => {
-	ctx.response.type = "application/json";
+	ctx.response.type = JSON_MIME;
 	const body = await checkBody(ctx, "json");
 	if (body === null)
 		return;
@@ -109,7 +111,7 @@ router.get("/api/user/exists", async ctx => {
 });
 
 router.post("/api/user/new", async ctx => {
-	ctx.response.type = "application/json";
+	ctx.response.type = JSON_MIME;
 	const body = await checkBody(ctx, "form-data");
 	if (body === null)
 		return;
@@ -154,7 +156,7 @@ router.post("/api/user/new", async ctx => {
 });
 
 router.post("/api/user/login", async ctx => {
-	ctx.response.type = "application/json";
+	ctx.response.type = JSON_MIME;
 	const body = await checkBody(ctx, "json");
 	if (body === null)
 		return;
@@ -173,7 +175,7 @@ router.post("/api/user/login", async ctx => {
 });
 
 router.get("/api/user/logout", async ctx => {
-	ctx.response.type = "application/json";
+	ctx.response.type = JSON_MIME;
 	const user = await checkUserSession(ctx, sessions);
 	if (user === null)
 		return;
@@ -185,12 +187,12 @@ router.get("/api/user/logout", async ctx => {
 
 // comments API
 router.get("/api/comment/all", ctx => {
-	ctx.response.type = "application/json";
+	ctx.response.type = JSON_MIME;
 	ctx.response.body = chat.serializeUser();
 });
 
 router.post("/api/comment/single", async ctx => {
-	ctx.response.type = "application/json";
+	ctx.response.type = JSON_MIME;
 	const body = await checkBody(ctx, "json");
 	if (body === null)
 		return;
@@ -203,7 +205,7 @@ router.post("/api/comment/single", async ctx => {
 });
 
 router.post("/api/comment/new", async ctx => {
-	ctx.response.type = "application/json";
+	ctx.response.type = JSON_MIME;
 	const user = await checkUserSession(ctx, sessions);
 	if (user === null)
 		return;
@@ -220,7 +222,7 @@ router.post("/api/comment/new", async ctx => {
 });
 
 router.post("/api/comment/modify", async ctx => {
-	ctx.response.type = "application/json";
+	ctx.response.type = JSON_MIME;
 	const user = await checkUserSession(ctx, sessions);
 	if (user === null)
 		return;
@@ -241,7 +243,7 @@ router.post("/api/comment/modify", async ctx => {
 });
 
 router.post("/api/comment/delete", async ctx => {
-	ctx.response.type = "application/json";
+	ctx.response.type = JSON_MIME;
 	const user = await checkUserSession(ctx, sessions);
 	if (user === null)
 		return;
@@ -261,11 +263,32 @@ router.post("/api/comment/delete", async ctx => {
 	ctx.response.body = { success: true };
 });
 
+router.post("/api/comment/vote", async ctx => {
+	ctx.response.type = JSON_MIME;
+	const user = await checkUserSession(ctx, sessions);
+	if (user === null)
+		return;
+	const body = await checkBody(ctx, "json");
+	if (body === null)
+		return;
+	const m = chat.getMessageByPath(body.target);
+	if (m === null) {
+		serveError(ctx, 404, "no such message");
+		return;
+	}
+	// practicing for IOCCC again (/j)
+	[m.downvote, m.unvote, m.upvote][
+		(body.vote === 0) +
+		(body.vote > 0) * 2
+	](user.name);
+	ctx.response.body = { success: true, score: m.score };
+});
+
 // profile pictures
 router.post("/api/pic/:name", ctx => {
 	const path = DenoUtil.agnosticPath(config.pfp_path + "/" + ctx.params.name);
 	if (!DenoUtil.lstatSafe(path)?.isFile) {
-		ctx.response.type = "application/json";
+		ctx.response.type = JSON_MIME;
 		serveError(ctx, 404, "no such profile picture");
 	}
 	ctx.response.type = "image/png";
