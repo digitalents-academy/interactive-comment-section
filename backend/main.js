@@ -63,7 +63,7 @@ async function checkBody(ctx, btype) {
 async function checkUserSession(ctx, s) {
 	const token = await ctx.cookies.get("BearerToken");
 	if (!token) {
-		serveError(ctx, 403, "authorization required");
+		serveError(ctx, 403, "authentication required");
 		return null;
 	}
 	const user = s[token];
