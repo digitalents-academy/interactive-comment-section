@@ -17,7 +17,7 @@
  */
 
 export function base64valid(a) {
-	if (a.search(/\s+/g))
+	if (a.search(/\s+/g) > -1)
 		return false; // no whitespace please
 	try {
 		void atob(a);
