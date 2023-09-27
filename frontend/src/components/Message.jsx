@@ -1,11 +1,71 @@
-import { useState } from 'react'
+import { useState, Component } from 'react'
 import Edit from '../components/Edit'
 import Reply from '../components/Reply'
 
 import { UnixToGuess } from '../util/UnixConvert.js' //Unix timestamp converter
+import {MessageRoot} from '../../common_lib/chat'
 //UnixToGuess(UnixTimestamp) -> "# X(s) Ago" 
 //^ X = "seconds", "minutes", "hours", "days", "weeks", "months" ^
 
+/*
+NEW
+*/
+
+export default class MessageRoot extends Component{
+    render() {
+        <div className='MessageContainer'>
+            <div className='Message'>
+
+                <div className='Vote'>
+                    <img className='Plus CTRL' src='/assets/plus.svg'/>
+                    <p className='Votes'>{this.votes}</p>
+                    <img className='Minus CTRL' src='/assets/minus.svg'/>
+                </div>
+
+                <div className='MessageBody'>
+                    <div className='Title'>
+                        <img className='Pfp' src={this.user.png}/>
+                        <p className='AuthorName'>{this.user.name}</p>
+                        {
+                            isAuthor && <p className='youTag'>you</p>
+                        }
+                        <p className='Time'>{UnixToGuess(this.time)}</p>
+                    </div>
+                </div>
+                
+                <div className='Controls'>
+                    {
+                        isAuthor && <button onClick={() => del(this.index)} className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
+                    }
+                    {
+                        isAuthor && <button onClick={()=>setEditing(this.index)} className='Edit'><img className='Ed' src='/assets/edit.svg'/> Edit</button>
+                    }
+                    {
+                        !isAuthor && <button onClick={()=>setReplying(this.index)} className='Reply'><img className='Rep' src='/assets/reply.svg'/> Reply</button>
+                    }
+                </div>
+                {
+                editing && <Edit
+                        data={this.content}
+                        onFinish={handleEdit}
+                />
+                }
+                {
+                    !editing && <p className='Text'>{this.content}</p>
+                }
+            </div>
+            {
+                replying && <Reply
+                    data={this.content}
+                    onFinish={handleReply}
+                />
+            }
+        </div>
+    }
+}
+
+/*
+OLD
 export default function Message({isAuthor, data, del}){
     
     const [editing, setEditing] = useState(null)
@@ -73,6 +133,6 @@ export default function Message({isAuthor, data, del}){
             }
         </div>
     )
-}
+}*/
 
 //{data.replyingTo && <span className='Tag'>@{data.replyingTo}</span>} 
