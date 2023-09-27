@@ -1,5 +1,5 @@
 /*
- * comments backend - crypto support for Chat.MessageRoot
+ * comments backend - crypto backend for Chat.MessageRoot
  * Copyright (C) 2023  Marisa
  * 
  * This program is free software: you can redistribute it and/or modify

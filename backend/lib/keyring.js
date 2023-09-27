@@ -1,5 +1,5 @@
 /*
- * comments backend - keyring for oak
+ * comments backend - cookie signing keyring for oak
  * Copyright (C) 2023  Marisa
  * 
  * This program is free software: you can redistribute it and/or modify

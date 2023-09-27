@@ -1,5 +1,5 @@
 /*
- * comments backend - chat tree implementation
+ * comments page common libs - chat tree implementation
  * Copyright (C) 2023  Marisa
  * 
  * This program is free software: you can redistribute it and/or modify
