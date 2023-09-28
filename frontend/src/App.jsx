@@ -39,6 +39,12 @@ const App = () => {
     return false
   }
 
+  function Update(){
+    API.GetComments().then(res=>{
+      setMessages(res)
+    })
+  }
+
   function Delete(){
     if (del !== null) {
       API.Delete(del)
@@ -85,6 +91,7 @@ const App = () => {
                 downv={NMSG.downvote(user.name)}
                 unv={NMSG.unvote(user.name)}
                 del={(e)=>{setDel(e)}}
+                update={Update}
 
                 user={{name:NMSG.user.name, pfp:NMSG.user.pfp}}
                 isAuthor={getAuth(NMSG.user.name)}
@@ -104,6 +111,7 @@ const App = () => {
             downv={Main.downvote(user.name)}
             unv={Main.unvote(user.name)}
             del={(e)=>{setDel(e)}}
+            update={Update}
 
             user={{name:Main.user.name, pfp:Main.user.pfp}}
             isAuthor={getAuth(Main.user.name)}
