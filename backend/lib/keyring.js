@@ -77,9 +77,8 @@ export default class Keyring {
 			this.keys = data.keys.map(k => Util.unbase64(k));
 		} catch(e) {
 			this.#error("failed to load, keyring is empty. error:", e.message);
-		} finally {
-			this.#info("loaded", this.ringSize, "signing keys");
 		}
+		this.#info("loaded", this.ringSize, "signing keys");
 	}
 
 	save() {
