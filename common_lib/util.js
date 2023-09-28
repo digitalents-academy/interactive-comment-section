@@ -1,5 +1,5 @@
 /*
- * comments backend - utilities, some of which should be in vanilla JS
+ * comments page common libs - utilities
  * Copyright (C) 2023  Marisa
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,8 @@
  */
 
 export function base64valid(a) {
+	if (a.search(/\s+/g) > -1)
+		return false; // no whitespace please
 	try {
 		void atob(a);
 		return true;
