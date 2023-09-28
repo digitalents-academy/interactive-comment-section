@@ -185,6 +185,14 @@ router.get("/api/user/logout", async ctx => {
 	ctx.response.body = { success: true };
 });
 
+router.get("/api/user/session", async ctx => {
+	ctx.response.type = JSON_MIME;
+	const user = await checkUserSession(ctx, sessions);
+	if (user === null)
+		return;
+	ctx.response.body = { success: true, user: user.serializeUser() };
+});
+
 // comments API
 router.get("/api/comment/all", ctx => {
 	ctx.response.type = JSON_MIME;
