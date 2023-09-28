@@ -4,9 +4,8 @@ import { clearNoti } from '../reducers/notiReducer';
 import './css/notification.css';
 
 const getStyle = (type) => {
-    const red = 'rgba(200,0,0,1)' //these dont look so good lol
+    const red = 'rgba(200,0,0,1)'
     const green = 'rgba(0,200,0,1)'
-    console.log('type ', type)
     if (!type) return {}
     switch(type) {
         case 'e':

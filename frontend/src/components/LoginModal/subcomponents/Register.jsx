@@ -4,39 +4,23 @@ import Buttons from './Buttons';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { setNoti } from '../../../reducers/notiReducer';
-import * as util from '../../../../../common_lib/util.js'
+import { register } from '../../../reducers/userReducer';
+import { useState } from 'react';
 
-const Register = ({ user, setUser, pfp, setPfp, pwd, setPwd, setModal, Header }) => {
+const Register = ({ user, setUser, pwd, setPwd, setModal, Header }) => {
     const dispatch = useDispatch();
+    const [pfp, setPfp] = useState(null);
 
-    const register = async () => {
+    const submit = async () => {
         if (!isAllowed) { dispatch(setNoti('...')); return; }
-        const formData = new FormData();
-        formData.append('png', pfp);
-        formData.append('pwhash', await util.sha256str(pwd));
-        formData.append('name', user);
-        try {
-            const res = await fetch('https://localhost:8443/api/user/new', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await res.json();
-            if (!result.success) {
-                dispatch(setNoti(`Error: ${result?.error}!`));
-                return;
-            }
-            setModal(false);
-        }
-        catch(e) { 
-            dispatch(setNoti({msg: String(e), type: 'e'})); console.log(e);
-        }
+        dispatch(register(user, pwd, pfp));
     }
 
     const doSomething = (e) => { 
         e.target.files[0] && setPfp(e.target.files[0]);
     };
 
-    const isAllowed = user.length > 1 && pwd.length && pfp;
+    const isAllowed = !!user && !!pwd && !!pfp;
 
     return (
         <div>
@@ -50,7 +34,7 @@ const Register = ({ user, setUser, pfp, setPfp, pwd, setPwd, setModal, Header })
                     <img src={URL.createObjectURL(pfp)} alt='pfp' onClick={() => document.querySelector('.pfpinput').click()} onError={() => setPfp(null)} />
                 }
             </div>
-            <Buttons setModal={setModal} txt='Register' isAllowed={isAllowed} submit={register}/>    
+            <Buttons setModal={setModal} txt='Register' isAllowed={isAllowed} submit={submit}/>    
         </div> 
     );
 };

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import './LoginModal.css';
 import Register from "./subcomponents/Register";
 import Login from "./subcomponents/Login";
-import Tabs from './subcomponents/Tabs'
+import Tabs from './subcomponents/Tabs';
 
 //this feels stupid
 const Header = ({txt}) => {
@@ -13,19 +13,17 @@ const Header = ({txt}) => {
             <h2>{txt}</h2>
         </div>
     )
-};
+}; Header.propTypes = { txt: PropTypes.string };
 
 const LoginModal = ({ setModal }) => {
-
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [pfp, setPfp] = useState(null);
     const [onLogin, setOnLogin] = useState(true);
 
     return (
         <div className='modal-bg'>
             <div className="login-modal">
-                <Tabs setTabs={setOnLogin} activetab={onLogin} loginTab={onLogin}/>
+                <Tabs setTabs={setOnLogin} loginTab={onLogin}/>
                 <div className="modal-content">
                     {onLogin ?
                         <Login 
@@ -43,8 +41,6 @@ const LoginModal = ({ setModal }) => {
                             setUser={setUsername} 
                             setPwd={setPassword} 
                             setModal={setModal} 
-                            pfp={pfp} 
-                            setPfp={setPfp} 
                             Header={Header}
                         />
                     }
@@ -59,3 +55,7 @@ LoginModal.propTypes = {
 };
 
 export default LoginModal;
+
+/*
+    const props = {user: username, pwd: password, setUser: setUsername, setPwd: setPassword, setModal: setModal, Header: Header}
+*/
