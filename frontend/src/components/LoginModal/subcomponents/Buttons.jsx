@@ -4,7 +4,6 @@ const Buttons = ({txt, setModal, isAllowed, submit}) => {
     return (
         <div className="loginbutton">
             <button onClick={() => submit()} style={{filter: !isAllowed && 'opacity(30%)'}}>{txt}</button>
-            <button onClick={() => setModal(false)} className="close-button">Close</button>
         </div>
     )
 }
