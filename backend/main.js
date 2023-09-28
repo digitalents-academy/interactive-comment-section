@@ -316,8 +316,9 @@ svr.use(async (ctx, next) => {
 	// assume frontend is running on the same domain
 	ctx.response.headers.set("Access-Control-Allow-Origin",
 		`https://${ctx.request.url.hostname}:5173`);
-	ctx.response.headers.set("Access-Control-Allow-Headers", "*");
-	ctx.response.headers.set("Access-Control-Allow-Credentials", "true");
+	ctx.response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+	ctx.response.headers.set("Access-Control-Allow-Credentials", true);
+	ctx.response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
 	await next();
 });
 svr.use(router.routes());
