@@ -22,9 +22,9 @@ export default function Message({all, upv, downv, unv, user, del, update, isAuth
     function Vote(set){ //I'm unsure if this will work ;-;
         if ((vote != set) || (vote==null)) { //if vote is different or nonexisting
             if (set == '-') {
-                downv()
+                downv
             } else if (set=='+'){
-                upv()
+                upv
             }
             API.Vote().then(res=>{
                 if (res.success == true) {
@@ -33,7 +33,7 @@ export default function Message({all, upv, downv, unv, user, del, update, isAuth
             })
             setVote(set)
         } else if (vote==set) { //if vote == set we unvote
-            unv
+            unv()
             setVote(null)
         }
     }
@@ -64,13 +64,13 @@ export default function Message({all, upv, downv, unv, user, del, update, isAuth
 
                 <div className='Vote'>
                     <img 
-                        onClick={()=>{upv(); Vote('+')}} 
+                        onClick={()=>{upv; Vote('+')}} 
                         className='Plus CTRL' 
                         src='/assets/plus.svg'
                     />
-                    <p className='Votes'>{all.score}</p>
+                    <p className='Votes'>{score}</p>
                     <img  
-                        onClick={()=>{downv(); Vote('-')}} 
+                        onClick={()=>{downv; Vote('-')}} 
                         className='Minus CTRL' 
                         src='/assets/minus.svg'
                     />
