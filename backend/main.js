@@ -69,7 +69,7 @@ async function checkUserSession(ctx, s) {
 	const user = s[token];
 	if (!user) {
 		serveError(ctx, 403, "invalid session");
-		await ctx.cookies.delete("BearerToken");
+		await ctx.cookies.delete("BearerToken", { sameSite: "None" });
 		return null;
 	}
 	return user;
@@ -179,7 +179,7 @@ router.get("/api/user/logout", async ctx => {
 	const user = await checkUserSession(ctx, sessions);
 	if (user === null)
 		return;
-	await ctx.cookies.delete("BearerToken");
+	await ctx.cookies.delete("BearerToken", { sameSite: "None" });
 	delete sessions[user.token];
 	user.regenerateToken();
 	ctx.response.body = { success: true };
