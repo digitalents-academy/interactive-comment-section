@@ -4,6 +4,7 @@ import Buttons from './Buttons';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { setNoti } from '../../../reducers/notiReducer';
+import { signup } from '../../../reducers/userReducer';
 import * as util from '../../../../../common_lib/util.js'
 
 const Register = ({ user, setUser, pfp, setPfp, pwd, setPwd, setModal, Header }) => {
@@ -15,21 +16,23 @@ const Register = ({ user, setUser, pfp, setPfp, pwd, setPwd, setModal, Header })
         formData.append('png', pfp);
         formData.append('pwhash', await util.sha256str(pwd));
         formData.append('name', user);
-        try {
-            const res = await fetch('https://localhost:8443/api/user/new', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await res.json();
-            if (!result.success) {
-                dispatch(setNoti(`Error: ${result?.error}!`));
-                return;
-            }
-            setModal(false);
-        }
-        catch(e) { 
-            dispatch(setNoti({msg: String(e), type: 'e'})); console.log(e);
-        }
+
+        dispatch(signup(formData))
+        // try {
+        //     const res = await fetch('https://localhost:8443/api/user/new', {
+        //         method: 'POST',
+        //         body: formData
+        //     });
+        //     const result = await res.json();
+        //     if (!result.success) {
+        //         dispatch(setNoti(`Error: ${result?.error}!`));
+        //         return;
+        //     }
+        //     setModal(false);
+        // }
+        // catch(e) { 
+        //     dispatch(setNoti({msg: String(e), type: 'e'})); console.log(e);
+        // }
     }
 
     const doSomething = (e) => { 

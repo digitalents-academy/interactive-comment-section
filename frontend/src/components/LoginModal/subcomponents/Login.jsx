@@ -3,30 +3,34 @@ import PasswordInput from './PasswordInput';
 import UsernameInput from './UsernameInput';
 import Buttons from './Buttons';
 import * as util from '../../../../../common_lib/util.js'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setNoti } from '../../../reducers/notiReducer';
+import { signin } from '../../../reducers/userReducer';
 
 const Login = ({ user, pwd, setPwd, setUser, setModal, Header }) => {
     const dispatch = useDispatch();
 
-    const login = async () => {
+    const login = () => {
         if (!isAllowed) { dispatch(setNoti('...')); return; }
-        const hash = await util.sha256str(pwd);
-        const obj = { name: user, pwhash: hash };
-        try {
-            const res = await fetch('https://localhost:8443/api/user/login', {
-                method: 'POST',
-                body: JSON.stringify(obj), 
-                headers: { "Content-Type": "application/json" }            
-            });
-            const result = await res.json();
-            if (!result.success) {
-                dispatch(setNoti(`Error: ${result?.error}!`));
-                return;
-            }
-            setModal(false);
-        }
-        catch(e) { dispatch(setNoti(String(e))); console.log(e); }
+
+        dispatch(signin({user: user, pwd: pwd}))
+        setModal(false);
+        // const hash = await util.sha256str(pwd);
+        // const obj = { name: user, pwhash: hash };
+        // try {
+        //     const res = await fetch('https://localhost:8443/api/user/login', {
+        //         method: 'POST',
+        //         body: JSON.stringify(obj), 
+        //         headers: { "Content-Type": "application/json" }            
+        //     });
+        //     const result = await res.json();
+        //     if (!result.success) {
+        //         dispatch(setNoti(`Error: ${result?.error}!`));
+        //         return;
+        //     }
+        //     setModal(false);
+        // }
+        // catch(e) { dispatch(setNoti(String(e))); console.log(e); }
     };
 
     const isAllowed = user.length > 1 && !!pwd;
