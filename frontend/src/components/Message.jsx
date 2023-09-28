@@ -12,7 +12,7 @@ import API from './controllers/api'
 NEW
 */
 
-export default function Message({all, upv, downv, unv, user, isAuthor}){
+export default function Message({all, upv, downv, unv, user, del, isAuthor}){
     
     const [editing, setEditing] = useState(null)
     const [replying, setReplying] = useState(null)

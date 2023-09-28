@@ -42,11 +42,13 @@ const App = () => {
   }
 
   function Delete(){
-    API.Delete(del)
-    setDel(null)
-    API.GetComments().then(res=>{
-      setMessages(res)
-    })
+    if (del !== null) {
+      API.Delete(del)
+      setDel(null)
+      API.GetComments().then(res=>{
+        setMessages(res)
+      })
+    }
   }
 
   const MappedMessages = messages.map((msg) => {
@@ -84,6 +86,7 @@ const App = () => {
                 upv={NMSG.upvote(user.name)}
                 downv={NMSG.downvote(user.name)}
                 unv={NMSG.unvote(user.name)}
+                del={(e)=>{setDel(e)}}
 
                 user={{name:NMSG.user.name, pfp:NMSG.user.pfp}}
                 isAuthor={getAuth(NMSG.user.name)}
@@ -102,6 +105,7 @@ const App = () => {
             upv={Main.upvote(user.name)}
             downv={Main.downvote(user.name)}
             unv={Main.unvote(user.name)}
+            del={(e)=>{setDel(e)}}
 
             user={{name:Main.user.name, pfp:Main.user.pfp}}
             isAuthor={getAuth(Main.user.name)}
@@ -127,7 +131,7 @@ const App = () => {
     <div className='Room'>
       {
         del !== null && <DeleteModal
-          onFinish={Delete}
+          onFinish={() => {Delete}}
           cancel={() => {setDel(null)}}
         />
       }

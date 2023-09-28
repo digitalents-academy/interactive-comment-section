@@ -20,17 +20,18 @@ async function Comment(obj){
     return Req.then(res=>res.body)
 }
 
-async function Modify(){
-    const Req = axios.post(commentURL, )
-}
-
-async function Delete(){
-    const Req = axios.post(commentURL+'/delete')
+async function Modify(obj){
+    const Req = axios.post(commentURL+'/modify', obj)
     return Req.then(res=>res.body)
 }
 
-async function Vote(){
-    const Req = axios.post(commentURL+'/vote')
+async function Delete(obj){
+    const Req = axios.post(commentURL+'/delete', obj)
+    return Req.then(res=>res.body)
+}
+
+async function Vote(obj){
+    const Req = axios.post(commentURL+'/vote', obj)
     return Req.then(res=>res.body)
 }
 
