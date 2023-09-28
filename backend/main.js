@@ -150,7 +150,7 @@ router.post("/api/user/new", async ctx => {
 		serveError(ctx, 400, e.message);
 		return;
 	}
-	await ctx.cookies.set("BearerToken", user.token);
+	await ctx.cookies.set("BearerToken", user.token, { sameSite: "None" });
 	sessions[user.token] = user;
 	ctx.response.body = { success: true, user: user.serializeUser() };
 });
@@ -169,7 +169,7 @@ router.post("/api/user/login", async ctx => {
 		serveError(ctx, 403, "invalid password");
 		return;
 	}
-	await ctx.cookies.set("BearerToken", user.token);
+	await ctx.cookies.set("BearerToken", user.token, { sameSite: "None" });
 	sessions[user.token] = user;
 	ctx.response.body = { success: true, user: user.serializeUser() };
 });
@@ -318,7 +318,6 @@ svr.use(async (ctx, next) => {
 		`https://${ctx.request.url.hostname}:5173`);
 	ctx.response.headers.set("Access-Control-Allow-Headers", "*");
 	ctx.response.headers.set("Access-Control-Allow-Credentials", "true");
-	ctx.response.headers.set("Access-Control-Expose-Headers", "*");
 	await next();
 });
 svr.use(router.routes());
