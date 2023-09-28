@@ -314,7 +314,7 @@ if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
 
 svr.use(async (ctx, next) => {
 	ctx.response.headers.set("Access-Control-Allow-Origin",
-		`https://${ctx.request.url.host}:${ctx.request.url.port}`);
+		`https://${ctx.request.url.host}`);
 	ctx.response.headers.set("Access-Control-Allow-Headers", "*");
 	ctx.response.headers.set("Access-Control-Allow-Credentials", "true");
 	await next();
