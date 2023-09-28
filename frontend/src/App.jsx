@@ -7,7 +7,7 @@ import Data from '../../data.json'//Change for real data(?)
 import Send from './components/Send'
 import Notification from './components/Notification'
 import { useDispatch } from 'react-redux'
-import { logOff, setUser } from './reducers/userReducer'
+import { logOff, setUser, getSession } from './reducers/userReducer'
 
 import './css/App.css'
 
@@ -28,12 +28,7 @@ const App = () => {
       })
   })*/
 
-  //this is something for now
-  useEffect(() => {
-    if (localStorage.getItem('user') && localStorage.getItem('pfp')) {
-      dispatch(setUser({user: localStorage.getItem('user'), pfp: localStorage.getItem('pfp')}));
-    }
-  }, [dispatch]);
+  useEffect(() => { dispatch(getSession()); }, [dispatch]);
 
   function getAuth(auth){ //Change when we have epic data
     if (auth === Username) {

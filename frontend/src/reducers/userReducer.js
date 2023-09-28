@@ -12,7 +12,6 @@ const userSlice = createSlice({
         
         doLogin(state, action) {         
             const obj = action.payload;
-            localStorage.setItem('pfp', obj.user.png); localStorage.setItem('user', obj.user.name);   
             return {user: obj.user.name, pfp: obj.user.png};
         },
 
@@ -66,23 +65,41 @@ export const register = (user, pwd, pfp) => {
             console.log(e);
             dispatch(setNoti(String(e)));
         }
-    }
+    };
 };
 
 export const logOff = () => {
     return async dispatch => {
         try {
-            const res = await fetch('https://localhost:8443/api/user/logout', { method: 'GET' });
-            console.log(res);
+            const res = await fetch('https://localhost:8443/api/user/logout', { method: 'GET', credentials: 'include'});
+            const result = await res.json();
+            if (!result.success) {
+                dispatch(setNoti('?'));
+            }
         }
         catch(e) {
             console.log(e);
             dispatch(setNoti(String(e)));
         }
-        localStorage.clear();
         dispatch(resetUser());
         dispatch(setNoti('bye'));
-    }
-}
+    };
+};
+
+export const getSession = () => {
+    return async dispatch => {
+        try {
+            const res = await fetch('https://localhost:8443/api/user/session', { method: 'GET', credentials: 'include' });
+            const result = await res.json();
+            if (result.success && result.user) {
+                dispatch(doLogin(result));
+            }
+        }
+        catch(e) {
+            console.log(e);
+            dispatch(setNoti(String(e)));
+        }
+    };
+};
 
 export default userSlice.reducer;
