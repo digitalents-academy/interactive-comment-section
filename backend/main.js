@@ -318,6 +318,7 @@ svr.use(async (ctx, next) => {
 		`https://${ctx.request.url.hostname}:5173`);
 	ctx.response.headers.set("Access-Control-Allow-Headers", "*");
 	ctx.response.headers.set("Access-Control-Allow-Credentials", "true");
+	ctx.response.headers.set("Access-Control-Expose-Headers", "*");
 	await next();
 });
 svr.use(router.routes());
