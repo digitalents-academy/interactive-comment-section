@@ -30,6 +30,7 @@ export const login = (user, pw) => {
                 method: 'POST',
                 body: JSON.stringify({name: user, pwhash: await sha256str(pw)}), 
                 headers: { "Content-Type": "application/json" },
+                credentials: 'include'
             });
             const result = await res.json();
             if (!result.success) { throw result.error; }
@@ -52,7 +53,8 @@ export const register = (user, pwd, pfp) => {
         try {
             const res = await fetch('https://localhost:8443/api/user/new', {
                 method: 'POST',
-                body: fd
+                body: fd,
+                credentials: 'include'
             });
             const result = await res.json();
             if (!result.success) { throw result.error; }
