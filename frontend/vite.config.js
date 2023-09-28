@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { PORT, KEY, CERT } from '../a.json'
+import { PORT, KEY, CERT } from '../config.json'
 
 import * as fs from "node:fs";
 import path from 'node:path';

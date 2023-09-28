@@ -1,5 +1,0 @@
-{
-    "PORT": 5173,
-    "KEY": "backend/cert/ckey.pem",
-    "CERT": "backend/cert/cert.pem"
-}

@@ -26,20 +26,29 @@ import * as CC from './lib/cryptchat.js';
 const JSON_MIME = "application/json";
 
 const config = {
+	config_path: "../config.json",
 	svr_port: 8443,
 	chat_path: DenoUtil.agnosticPath("./comments.json"),
 	pfp_path: DenoUtil.agnosticPath("./pfps"),
 	cookie_keyring: DenoUtil.agnosticPath("./keyring.json"),
-	keyring_size: 8,
-	ckey_path: DenoUtil.agnosticPath("./cert/ckey.pem"),
-	cert_path: DenoUtil.agnosticPath("./cert/cert.pem")
+	keyring_size: 8
 };
 
 const logger = new Logger("Main");
 const lroute = logger.sub("Routing");
 
-logger.info("Configuration:\n\t" + Object.entries(config).map(e =>
-	e.join(" => ")).join("\n\t"));
+try {
+	const cfg = JSON.parse(Deno.readTextFileSync(config.config_path));
+	config.ckey_path = DenoUtil.resolveRelative(".", "..", cfg.KEY);
+	config.cert_path = DenoUtil.resolveRelative(".", "..", cfg.CERT);
+	config.frontend_port = cfg.PORT;
+} catch(e) {
+	logger.error(`Can't process ${config.config_path}:`, e.message);
+	Deno.exit(1);
+}
+
+logger.info("Configuration:\n\t" + Object.entries(config)
+	.map(e => e.join(" => ")).join("\n\t"));
 
 function serveError(ctx, s, msg) {
 	lroute.warn("an API request to", ctx.request.url.pathname,
@@ -315,7 +324,7 @@ if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
 svr.use(async (ctx, next) => {
 	// assume frontend is running on the same domain
 	ctx.response.headers.set("Access-Control-Allow-Origin",
-		`https://${ctx.request.url.hostname}:5173`);
+		`https://${ctx.request.url.hostname}:${config.frontend_port}`);
 	ctx.response.headers.set("Access-Control-Allow-Headers", "Content-Type");
 	ctx.response.headers.set("Access-Control-Allow-Credentials", true);
 	ctx.response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");

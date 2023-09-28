@@ -1,0 +1,5 @@
+{
+    "PORT": 5173,
+    "KEY": "./cert/ckey.pem",
+    "CERT": "./cert/cert.pem"
+}
