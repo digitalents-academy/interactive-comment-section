@@ -31,7 +31,7 @@ async function Delete(){
 
 async function Vote(){
     const Req = axios.post(commentURL+'/vote')
-    return Req.then(res=>res.data)
+    return Req.then(res=>res.body)
 }
 
 export default{

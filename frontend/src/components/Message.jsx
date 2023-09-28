@@ -1,4 +1,4 @@
-import { useState, Component } from 'react'
+import { useState } from 'react'
 import Edit from '../components/Edit'
 import Reply from '../components/Reply'
 
@@ -12,10 +12,25 @@ import API from './controllers/api'
 NEW
 */
 
-export default function Message({all, upv, downv, unv, isAuthor}){
+export default function Message({all, upv, downv, unv, user, isAuthor}){
     
     const [editing, setEditing] = useState(null)
     const [replying, setReplying] = useState(null)
+    const [vote, setVote] = useState(null)
+
+    function Vote(set){
+        if ((vote != set) || (vote==null)) { //if vote is different or nonexisting
+            if (set == '-') {
+                downv
+            } else if (set=='+'){
+                upv
+            }
+            setVote(set)
+        } else if (vote==set) { //if vote == set we unvote
+            unv
+            setVote(null)
+        }
+    }
 
     const handleEdit = (e) => { //When edit form is submitted
         console.log(e)
@@ -38,16 +53,24 @@ export default function Message({all, upv, downv, unv, isAuthor}){
             <div className='Message'>
 
                 <div className='Vote'>
-                    <img onClick={upv} className='Plus CTRL' src='/assets/plus.svg'/>
+                    <img 
+                        onClick={()=>{upv; Vote('+')}} 
+                        className='Plus CTRL' 
+                        src='/assets/plus.svg'
+                    />
                     <p className='Votes'>{all.score}</p>
-                    <img onClick={downv} className='Minus CTRL' src='/assets/minus.svg'/>
+                    <img  
+                        onClick={()=>{downv; Vote('-')}} 
+                        className='Minus CTRL' 
+                        src='/assets/minus.svg'
+                    />
                 </div>
 
                 <div className='MessageBody'>
 
                     <div className='Title'>
-                        <img className='Pfp' src={all.user.png}/>
-                        <p className='AuthorName'>{all.user.name}</p>
+                        <img className='Pfp' src={user.pfp}/>
+                        <p className='AuthorName'>{user.name}</p>
                         {
                             isAuthor && <p className='youTag'>you</p>
                         }

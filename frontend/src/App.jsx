@@ -1,16 +1,12 @@
 import { useState, useEffect } from 'react'
 import './css/App.css'
-import API from './controllers/api' //GetChat (Get), Chat (Create), Update, Delete
-//import Data from '../../data.json'//Change for real data(?)
-//const Username = Data.currentUser.name//Temporary
+import API from './controllers/api'
 
 import MessageComp from './components/Message'
 import Send from './components/Send'
 import DeleteModal from './components/Delete'
 
-let currentUser = null
-
-import { hydrateMessage, MessageRoot, Message, User } from '../../common_lib/chat'
+import { MessageRoot, Message } from '../../common_lib/chat'
 //I've no idea how to use classes for anything, so I'm learning lol
 //In process of using classes for messages, sry X_X
 const App = () => {
@@ -19,49 +15,39 @@ const App = () => {
   const [user, setUser] = useState({})
 
   useEffect(()=>{
-      API.GetComments().then(res=>{
-        setMessages(res)
+    
+    API.GetComments().then(res=>{
+      setMessages(res)
+    })
+
+    const User = localStorage.getItem('user')
+    const Pfp = localStorage.getItem('pfp')
+
+    if (User !== null && Pfp !== null) { //check localstorage for user & pfp
+      setUser({name:User, pfp:Pfp})
+    } else { //if null try to get session
+      API.GetSession().then(res=>{
+        if (res.name !== null) {
+          setUser({name:res.name, pfp:res.pfp})
+        }
       })
-
-      const User = localStorage.getItem('user')
-      const Pfp = localStorage.getItem('pfp')
-
-      if (User !== null && Pfp !== null) { //check localstorage for user & pfp
-        currentUser = {user:User, pfp:Pfp}
-      } else { //if null try to get session
-        API.GetSession().then(res=>{
-          if (res.name !== null) {
-            setUser({user:res.name, pfp:res.pfp})
-          }
-        })
-      }
+    }
   })
 
   function getAuth(auth){ //Change when we have epic data
-    if (auth === currentUser.user) {
+    if (auth === user.name) {
       return true
     }
     return false
   }
 
-  const handleDel = (ID) => {
-    console.log(ID,' handleDel')
-    setDel(ID)
-  }
-
-  function Update(){
+  function Delete(){
+    API.Delete(del)
+    setDel(null)
     API.GetComments().then(res=>{
       setMessages(res)
     })
   }
-
-  function Delete(){
-    API.Delete(del)
-    setDel(null)
-    Update()
-  }
-
-
 
   const MappedMessages = messages.map((msg) => {
       //big boi comment & reply tree
@@ -95,10 +81,11 @@ const App = () => {
               <MessageComp
                 all={NMSG}
 
-                upv={Main.upvote(currentUser.name)}
-                downv={Main.downvote(currentUser.name)}
-                unv={Main.unvote(currentUser.name)}
+                upv={NMSG.upvote(user.name)}
+                downv={NMSG.downvote(user.name)}
+                unv={NMSG.unvote(user.name)}
 
+                user={{name:NMSG.user.name, pfp:NMSG.user.pfp}}
                 isAuthor={getAuth(NMSG.user.name)}
                 key={NMSG.index}
               />
@@ -112,12 +99,13 @@ const App = () => {
           <MessageComp
             all={Main}
 
-            upv={Main.upvote(currentUser.name)}
-            downv={Main.downvote(currentUser.name)}
-            unv={Main.unvote(currentUser.name)}
+            upv={Main.upvote(user.name)}
+            downv={Main.downvote(user.name)}
+            unv={Main.unvote(user.name)}
 
+            user={{name:Main.user.name, pfp:Main.user.pfp}}
             isAuthor={getAuth(Main.user.name)}
-            key={msg.index}
+            key={Main.index}
           />
           {
             Replies && 
@@ -144,7 +132,9 @@ const App = () => {
         />
       }
       {MappedMessages}
-      <Send/>
+      <Send
+        user={user}
+      />
     </div>
   )
 }
