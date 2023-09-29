@@ -22,7 +22,7 @@ const App = () => {
 
   const dispatch = useDispatch()
   const user = useSelector(x => x.user);
-  const [modal, setModal] = useState(true);
+  const [modal, setModal] = useState(false);
 
   useEffect(()=>{
     async function FetchComments(){
@@ -37,8 +37,8 @@ const App = () => {
     }
     FetchComments()
   }, [])
-
-  useEffect(() => { dispatch(getSession());}, [dispatch]);
+  //don't know if if localstorage is a good idea but it's less red in console :D (while not logged in) (and gets rid of flashing login thing)
+  useEffect(() => { localStorage.getItem('logged') ? dispatch(getSession()) : setModal(true)}, [dispatch]);
 
   function getAuth(auth){
     if (auth === user.user) {

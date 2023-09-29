@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 
-const Buttons = ({txt, setModal, isAllowed, submit}) => {
+const Buttons = ({txt, isAllowed, submit}) => {
     return (
         <div className="loginbutton">
             <button onClick={() => submit()} style={{filter: !isAllowed && 'opacity(30%)'}}>{txt}</button>
@@ -10,9 +10,8 @@ const Buttons = ({txt, setModal, isAllowed, submit}) => {
 
 Buttons.propTypes = {
     txt: PropTypes.string,
-    setModal: PropTypes.func,
     isAllowed: PropTypes.bool,
     submit: PropTypes.func
-}
+};
 
 export default Buttons;

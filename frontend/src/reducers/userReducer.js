@@ -6,17 +6,19 @@ const initial = { user: '', pfp: null };
 
 const userSlice = createSlice({  
     name: 'user', initialState: {...initial}, reducers: {
-        setUser(state, action) {
-            return {...action.payload};
-        },
-        
-        doLogin(state, action) {         
-            const obj = action.payload;
-            return {user: obj.user.name, pfp: obj.user.png};
+        doLogin(_state, action) {         
+            const obj = action.payload.user;
+            localStorage.setItem('logged', 1);
+            return {user: obj.name, pfp: obj.png};
         },
 
         resetUser() {
+            localStorage.removeItem('logged');
             return initial;
+        },
+
+        doNothing(state) {
+            return state;
         }
     }
 });
@@ -93,6 +95,10 @@ export const getSession = () => {
         try {
             const res = await fetch('https://localhost:8443/api/user/session', { method: 'GET', credentials: 'include' });
             const result = await res.json();
+            if (result.success === false) {
+                localStorage.removeItem('logged');
+                dispatch(setNoti('session expired'));
+            }
             if (result.success && result.user) {
                 dispatch(doLogin(result));
             }

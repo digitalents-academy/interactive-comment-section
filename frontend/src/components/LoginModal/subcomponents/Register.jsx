@@ -1,5 +1,4 @@
-import PasswordInput from './PasswordInput';
-import UsernameInput from './UsernameInput';
+import TextInput from './TextInput';
 import Buttons from './Buttons';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
@@ -7,7 +6,7 @@ import { setNoti } from '../../../reducers/notiReducer';
 import { register } from '../../../reducers/userReducer';
 import { useState } from 'react';
 
-const Register = ({ user, setUser, pwd, setPwd, setModal, Header }) => {
+const Register = ({ user, setUser, pwd, setPwd, Header }) => {
     const dispatch = useDispatch();
     const [pfp, setPfp] = useState(null);
 
@@ -16,7 +15,7 @@ const Register = ({ user, setUser, pwd, setPwd, setModal, Header }) => {
         dispatch(register(user, pwd, pfp));
     }
 
-    const doSomething = (e) => { 
+    const doSomething = (e) => {
         e.target.files[0] && setPfp(e.target.files[0]);
     };
 
@@ -25,8 +24,7 @@ const Register = ({ user, setUser, pwd, setPwd, setModal, Header }) => {
     return (
         <div>
             <Header txt='Register plss'/>
-            <UsernameInput user={user} setUser={setUser} />
-            <PasswordInput pwd={pwd} setPwd={setPwd} />
+            <TextInput user={user} setUser={setUser} pwd={pwd} setPwd={setPwd} />
             <input type='file' accept=".png" style={{display: 'none'}} onChange={doSomething} className='pfpinput'></input>
             <div className='clickhere'>
                 <p onClick={() => document.querySelector('.pfpinput').click()}>click here add a profile picture</p>
@@ -34,7 +32,7 @@ const Register = ({ user, setUser, pwd, setPwd, setModal, Header }) => {
                     <img src={URL.createObjectURL(pfp)} alt='pfp' onClick={() => document.querySelector('.pfpinput').click()} onError={() => setPfp(null)} />
                 }
             </div>
-            <Buttons setModal={setModal} txt='Register' isAllowed={isAllowed} submit={submit}/>    
+            <Buttons txt='Register' isAllowed={isAllowed} submit={submit}/>    
         </div> 
     );
 };
