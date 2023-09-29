@@ -4,7 +4,7 @@ import Reply from '../components/Reply'
 
 import { UnixToGuess } from '../util/UnixConvert.js' //Unix timestamp converter
 
-import API from './controllers/api'
+import API from '../controllers/api'
 //UnixToGuess(UnixTimestamp) -> "# X(s) Ago" 
 //^ X = "seconds", "minutes", "hours", "days", "weeks", "months" ^
 
@@ -12,22 +12,28 @@ import API from './controllers/api'
 NEW
 */
 
-export default function Message({all, upv, downv, unv, user, del, isAuthor}){
+export default function Message({all, upv, downv, unv, user, del, update, isAuthor}){
     
     const [editing, setEditing] = useState(null)
     const [replying, setReplying] = useState(null)
     const [vote, setVote] = useState(null)
+    const [score, setScore] = useState(0)
 
-    function Vote(set){
+    function Vote(set){ //I'm unsure if this will work ;-;
         if ((vote != set) || (vote==null)) { //if vote is different or nonexisting
             if (set == '-') {
                 downv
             } else if (set=='+'){
                 upv
             }
+            API.Vote().then(res=>{
+                if (res.success == true) {
+                    setScore(res.score)
+                }
+            })
             setVote(set)
         } else if (vote==set) { //if vote == set we unvote
-            unv
+            unv()
             setVote(null)
         }
     }
@@ -35,7 +41,9 @@ export default function Message({all, upv, downv, unv, user, del, isAuthor}){
     const handleEdit = (e) => { //When edit form is submitted
         console.log(e)
         API.Modify(e).then(res=>{
-
+            if (res.success == true) {
+                update()
+            }
         })
         setEditing(null)
     }
@@ -43,7 +51,9 @@ export default function Message({all, upv, downv, unv, user, del, isAuthor}){
     const handleReply = (e) => { //When reply form is submitted
         console.log(e)
         API.Comment(e).then(res=>{
-
+            if (res.success == true) {
+                update()
+            }
         })
         setReplying(null)
     }
@@ -58,7 +68,7 @@ export default function Message({all, upv, downv, unv, user, del, isAuthor}){
                         className='Plus CTRL' 
                         src='/assets/plus.svg'
                     />
-                    <p className='Votes'>{all.score}</p>
+                    <p className='Votes'>{score}</p>
                     <img  
                         onClick={()=>{downv; Vote('-')}} 
                         className='Minus CTRL' 

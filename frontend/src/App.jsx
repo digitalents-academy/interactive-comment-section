@@ -3,8 +3,7 @@ import { useSelector } from 'react-redux'
 import Header from './components/Header'
 import MessageComp from './components/Message'
 import Modal from './components/LoginModal'
-//import API from './controllers/api' //GetChat (Get), Chat (Create), Update, Delete
-import Data from '../../data.json'//Change for real data(?)
+import API from './controllers/api' //GetChat (Get), Chat (Create), Update, Delete
 import Send from './components/Send'
 import Notification from './components/Notification'
 import { useDispatch } from 'react-redux'
@@ -12,33 +11,46 @@ import { getSession } from './reducers/userReducer'
 
 import './css/App.css'
 
-const Username = Data.currentUser.name//Temporary
 import DeleteModal from './components/Delete'
 
 import { MessageRoot, Message } from '../../common_lib/chat'
 //I've no idea how to use classes for anything, so I'm learning lol
 //In process of using classes for messages, sry X_X
 const App = () => {
-  const [messages, setMessages] = useState(Data.comments)
+  const [messages, setMessages] = useState(null)
   const [del, setDel] = useState(null)
 
   const dispatch = useDispatch()
   const user = useSelector(x => x.user);
   const [modal, setModal] = useState(true);
 
-  /*useEffect(()=>{
-      API.GetChat().then(res=>{
-        setMessages(res)
-      })
-  })*/
+  useEffect(()=>{
+    async function FetchComments(){
+      console.log('hello pls')
+      try{
+        const Comments = await API.GetComments()
+        console.log(Comments.chat)
+        setMessages(Comments.chat)
+      } catch(e){
+        console.error(e)
+      }
+    }
+    FetchComments()
+  }, [])
 
-  useEffect(() => { dispatch(getSession()); }, [dispatch]);
+  useEffect(() => { dispatch(getSession());}, [dispatch]);
 
   function getAuth(auth){
-    if (auth === user.name) {
+    if (auth === user.user) {
       return true
     }
     return false
+  }
+
+  function Update(){
+    API.GetComments().then(res=>{
+      setMessages(res)
+    })
   }
 
   function Delete(){
@@ -51,54 +63,65 @@ const App = () => {
     }
   }
 
-  const MappedMessages = messages.map((msg) => {
-      //big boi comment & reply tree
-      let Replies = null
-      const aRoot = new MessageRoot
+  if (user.user && modal) setModal(false);
 
-      const Main = new Message( //Creating a new message
-        aRoot,
-        aRoot,
-        msg.index,
-        msg.user,
-        msg.votes,
-        msg.text,
-        msg.time
-      )
+  return (
+    <div className='Room'>
+      <Header setModal={setModal}/>
+      <Notification />
+      {
+        del !== null && <DeleteModal
+          onFinish={() => {Delete}}
+          cancel={() => {setDel(null)}}
+        />
+      }
+      {(messages !== null && messages.length > 0) && messages.map((msg) => {
+        let Replies = null
+        const Root = new MessageRoot
 
-      if (msg.children.length > 0) {
-        Replies = msg.children.map(reply => {
+        const Main = new Message(
+          Root,
+          Root,
+          msg.index,
+          msg.user,
+          msg.votes,
+          msg.text,
+          msg.time
+        )
 
-          const NMSG = new Message(
-            aRoot,
-            Main,
-            reply.index,
-            reply.user,
-            reply.votes,
-            reply.text,
-            reply.time
-          )
-          
+        if (msg.children.length > 0) {
+          Replies = msg.children.map(Reply => {
+            
+            const ReplyMSG = new Message(
+              Root,
+              Main,
+              Reply.index,
+              Reply.user,
+              Reply.votes,
+              Reply.text,
+              Reply.time
+            )
+
             return(
               <MessageComp
-                all={NMSG}
+                all={ReplyMSG}
 
-                upv={NMSG.upvote(user.name)}
-                downv={NMSG.downvote(user.name)}
-                unv={NMSG.unvote(user.name)}
+                upv={ReplyMSG.upvote(user.name)}
+                downv={ReplyMSG.downvote(user.name)}
+                unv={ReplyMSG.unvote(user.name)}
                 del={(e)=>{setDel(e)}}
+                update={Update}
 
-                user={{name:NMSG.user.name, pfp:NMSG.user.pfp}}
-                isAuthor={getAuth(NMSG.user.name)}
-                key={NMSG.index}
+                user={{name:ReplyMSG.user.name, pfp:ReplyMSG.user.pfp}}
+                isAuthor={getAuth(ReplyMSG.user.name)}
+                key={ReplyMSG.index}
               />
             )
-          }
-        )
-      }
+          })
+        }
 
-      return(
-        <div className='MessageTree'>
+        return(
+          <div className='MessageTree'>
           <MessageComp
             all={Main}
 
@@ -106,6 +129,7 @@ const App = () => {
             downv={Main.downvote(user.name)}
             unv={Main.unvote(user.name)}
             del={(e)=>{setDel(e)}}
+            update={Update}
 
             user={{name:Main.user.name, pfp:Main.user.pfp}}
             isAuthor={getAuth(Main.user.name)}
@@ -123,23 +147,8 @@ const App = () => {
             </div>
           }
         </div>
-      )
-    }
-  )
-
-  if (user.user && modal) setModal(false);
-
-  return (
-    <div className='Room'>
-      <Header setModal={setModal}/>
-      <Notification />
-      {
-        del !== null && <DeleteModal
-          onFinish={() => {Delete}}
-          cancel={() => {setDel(null)}}
-        />
-      }
-      {MappedMessages}
+        )
+      })}
       {!user.user && modal && <Modal setModal={setModal}/>}
       <Send
         user={user}
