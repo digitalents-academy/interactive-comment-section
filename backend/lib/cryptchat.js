@@ -1,5 +1,5 @@
 /*
- * comments backend - crypto support for Chat.MessageRoot
+ * comments backend - crypto backend for Chat.MessageRoot
  * Copyright (C) 2023  Marisa
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -30,16 +30,6 @@ async function genKeyWithIV() {
 		
 		crypto.getRandomValues(new Uint8Array(12))
 	];
-}
-
-function cryptHydrateMessage(r, up, m, i) {
-	// r.users[m.user] should be undefined for deleted users
-	// which is fine (check Message constructor from ../common_lib/chat.js)
-	const a = new CryptMessage(r, up, i,
-		r.users[m.user], m.votes, m.content, m.timestamp, m.token);
-	for (let i = 0; i < m.children.length; i++)
-		a.children.push(cryptHydrateMessage(r, a, m.children[i], i));
-	return a;
 }
 
 export class CryptMessageRoot extends Chat.MessageRoot {
@@ -77,24 +67,25 @@ export class CryptMessageRoot extends Chat.MessageRoot {
 		if (!obj.messageRoot)
 			throw new TypeError("not a serialized MessageRoot");
 		this.users = Object.fromEntries(Object.entries(obj.users).map(e =>
-			[e[0], new CryptUser(e[0], e[1].png, e[1].pwhash, e[1].token)]));
-		this.children = obj.chat.map((m, i) => cryptHydrateMessage(this, this, m, i))
+			[e[0], new CryptUser(e[0], e[1].png, e[1].pwhash)]));
+		this.children = obj.chat.map((m, i) => Chat.hydrateMessage(this, this, m, i))
 	}
 
 	// override
 	addUser(n, p, h) {
-		if (!Util.base64valid(h)) {
-			this.#error("addUser(): invalid base64 password hash");
-			return;
-		}
+		if (!Util.base64valid(h))
+			throw new TypeError("invalid base64 password hash");
+		if (Util.unbase64(h).length !== 32)
+			throw new TypeError("not a 256-bit hash");
 		this.users[n] = new CryptUser(n, p, h);
 		this.triggerModify();
+		return this.users[n];
 	}
 
 	async save(force = false) {
 		if (this.cryptInvalid && !force) {
 			this.#error("will not save due to invalid state (previous error)");
-			return;
+			return false;
 		}
 		try {
 			const enc = await this.encrypt();
@@ -103,8 +94,10 @@ export class CryptMessageRoot extends Chat.MessageRoot {
 				key: Util.base64(enc[1]),
 				iv:  Util.base64(enc[2])
 			}));
+			return true;
 		} catch(e) {
 			this.#error("encrypt/write error:", e.message);
+			return false;
 		} finally {
 			this.#info("written successfully");
 		}
@@ -127,11 +120,11 @@ export class CryptMessageRoot extends Chat.MessageRoot {
 			return;
 		}
 		if (!enc?.key?.length) {
-			this.#warn("no key, initialized empty");
+			this.#warn("no key");
 			return;
 		}
 		if (!enc?.iv?.length) {
-			this.#warn("no IV, initialized empty");
+			this.#warn("no IV");
 			return;
 		}
 		try {
@@ -147,7 +140,7 @@ export class CryptMessageRoot extends Chat.MessageRoot {
 			this.cryptInvalid = true;
 			return;
 		} finally {
-			this.#info("successfully initialized with", this.users.length,
+			this.#info("successfully initialized with", Object.keys(this.users).length,
 				"users and", this.children.length, "root-level messages");
 		}
 	}
@@ -157,13 +150,11 @@ export class CryptMessageRoot extends Chat.MessageRoot {
 			messageRoot: true,
 			users: Object.fromEntries(Object.entries(this.users).filter(u =>
 				u[0] !== DELETED_USER).map(e => [e[0], e[1].serializeUser()])),
-			chat: this.children.map(c => c.serializeUser())
+			chat: this.children.map(c => c.serialize())
 		};
 	}
 
-	// if this returns non-null, you should destroy this
-	// object and make a new one, using the elements of
-	// the returned array as arguments to the new one.
+	// override
 	async triggerModify() {
 		this.cryptModifyCount++;
 		if (this.cryptModifyCount < this.cryptSaveThreshold)
@@ -186,42 +177,28 @@ export class CryptMessageRoot extends Chat.MessageRoot {
 	}
 }
 
-export class CryptMessage extends Chat.Message {
-	constructor(r, p, i, u, v, t, ts, tok) {
-		super(r, p, i, u, v, t, ts);
-		this.token = tok;
-	}
-
-	serializeUser() {
-		return super.serialize();
-	}
-
-	serialize() {
-		return {
-			...super.serialize(),
-			token: this.token
-		}
-	}
-}
-
 export class CryptUser extends Chat.User {
-	constructor(n, p, h, t = null) {
+	constructor(n, p, h) {
 		super(n, p);
 		if (typeof(h) !== "string")
 			throw new TypeError("password must be a base64 string");
 		this.pwhash = h;
-		this.token = (t === null) ? Util.base64(crypto.getRandomValues(new Uint8Array(32))) : t;
+		this.regenerateToken();
+	}
+
+	regenerateToken() {
+		this.token = Util.base64(crypto.getRandomValues(new Uint8Array(32)));
 	}
 
 	serializeUser() {
 		return super.serialize();
 	}
 
+	// override
 	serialize() {
 		return {
 			...super.serialize(),
-			pwhash: this.pwhash,
-			token: this.token
+			pwhash: this.pwhash
 		}
 	}
 }

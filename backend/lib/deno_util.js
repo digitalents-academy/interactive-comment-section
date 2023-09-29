@@ -44,3 +44,14 @@ export function agnosticPath(p) {
 	// so it thinks this is a comment. I'm furious
 	return p.replace(/\//g, Path.SEP);
 }
+
+// sometimes doing this is necessary. (exit handlers!)
+// I have no fucking clue why this needs to be a hack
+// when it could be implemented as first-class functionality
+export function pending(p) {
+	return (Deno.inspect(p) === "Promise { <pending> }") ? true : false;
+}
+
+export function resolveRelative(p) {
+	return Path.relative(p, Path.resolve(...[...arguments].slice(1)));
+}

@@ -1,5 +1,5 @@
 /*
- * comments backend - chat tree implementation
+ * comments page common libs - chat tree implementation
  * Copyright (C) 2023  Marisa
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,9 @@ import * as Util from './util.js';
 
 const DELETED_USER = "deleted user";
 
-function hydrateMessage(r, up, m, i) {
+// exporting because it might come in useful for individual
+// messages
+export function hydrateMessage(r, up, m, i) {
 	// r.users[m.user] should be undefined for deleted users
 	// which is fine (check Message constructor)
 	const a = new Message(r, up, i,
@@ -65,10 +67,20 @@ export class MessageRoot {
 		return this.triggerModify();
 	}
 
-	add(u, v, t, ts = null) {
+	add(u, t, ts = null) {
 		this.children.push(new Message(this, this, this.children.length,
-			this.users[u], v, t, (ts === null) ? Util.unixTime() : ts));
+			this.users[u], { [u]: 1 }, t, (ts === null) ? Util.unixTime() : ts));
 		return this.triggerModify();
+	}
+
+	getMessageByPath(p) {
+		let m = this;
+		for (let i = 0; i < p.length; i++) {
+			m = m.children[p[i]];
+			if (!m)
+				return null;
+		}
+		return m;
 	}
 
 	remove(i) {
@@ -91,13 +103,17 @@ export class MessageRoot {
 		return JSON.stringify(this.serialize());
 	}
 
-	byVotes() {
+	byScore() {
 		return this.children.sort((a, b) =>
-			(a.votes < b.votes) - (b.votes < a.votes));
+			(a.score < b.score) - (b.score < a.score));
 	}
 }
 
 export class Message {
+	#computeScore() {
+		this.score = Object.values(this.votes).reduce((a, b) => a + b);
+	}
+
 	constructor(r, p, i, u, v, t, ts) {
 		this.children = [];
 		this.root  = r;
@@ -107,19 +123,29 @@ export class Message {
 		this.votes = v;
 		this.text  = t;
 		this.time  = ts;
+
+		// sets this.score
+		this.#computeScore();
 	}
 
-	upvote() {
-		this.votes++;
+	upvote(u) {
+		this.votes[u] = 1;
+		this.#computeScore();
 	}
 
-	downvote() {
-		this.votes--;
+	downvote(u) {
+		this.votes[u] = -1;
+		this.#computeScore();
 	}
 
-	add(u, v, t, ts = null) {
+	unvote(u) {
+		delete this.votes[u];
+		this.#computeScore();
+	}
+
+	add(u, t, ts = null) {
 		this.children.push(new Message(this.root, this, this.children.length,
-			this.root.users[u], v, t, (ts === null) ? Util.unixTime() : ts));
+			this.root.users[u], { [u]: 1 }, t, (ts === null) ? Util.unixTime() : ts));
 		return this.root.triggerModify();
 	}
 
@@ -139,11 +165,19 @@ export class Message {
 		return {
 			index: this.index,
 			user: this.user.name,
-			votes: this.votes,
+			votes: this.votes, // object
+			score: this.score,
 			content: this.text,
 			timestamp: this.time,
 			children: this.children.map(c => c.serialize())
 		};
+	}
+
+	path() {
+		const p = [this.index];
+		for (let m = this.up; m.root !== undefined; m = m.up)
+			p.unshift(m.index);
+		return p;
 	}
 
 	serializeFlat(ping = false) {
@@ -151,6 +185,7 @@ export class Message {
 			index: this.index,
 			user: this.user.name,
 			votes: this.votes,
+			score: this.score,
 			content: (ping ? `@${this.up.user.name} ` : "") + this.text,
 			timestamp: this.time,
 		}];

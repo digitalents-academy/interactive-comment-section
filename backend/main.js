@@ -18,23 +18,37 @@
 
 import * as Oak from 'https://deno.land/x/oak@v12.6.1/mod.ts';
 
+import Keyring from './lib/keyring.js';
 import Logger from '../common_lib/logger.js';
 import * as DenoUtil from './lib/deno_util.js';
 import * as CC from './lib/cryptchat.js';
 
+const JSON_MIME = "application/json";
+
 const config = {
+	config_path: "../config.json",
 	svr_port: 8443,
 	chat_path: DenoUtil.agnosticPath("./comments.json"),
 	pfp_path: DenoUtil.agnosticPath("./pfps"),
-	ckey_path: DenoUtil.agnosticPath("./cert/ckey.pem"),
-	cert_path: DenoUtil.agnosticPath("./cert/cert.pem")
+	cookie_keyring: DenoUtil.agnosticPath("./keyring.json"),
+	keyring_size: 8
 };
 
 const logger = new Logger("Main");
 const lroute = logger.sub("Routing");
 
-logger.info("Configuration:\n\t" + Object.entries(config).map(e =>
-	e.join(" => ")).join("\n\t"));
+try {
+	const cfg = JSON.parse(Deno.readTextFileSync(config.config_path));
+	config.ckey_path = DenoUtil.resolveRelative(".", "..", cfg.KEY);
+	config.cert_path = DenoUtil.resolveRelative(".", "..", cfg.CERT);
+	config.frontend_port = cfg.PORT;
+} catch(e) {
+	logger.error(`Can't process ${config.config_path}:`, e.message);
+	Deno.exit(1);
+}
+
+logger.info("Configuration:\n\t" + Object.entries(config)
+	.map(e => e.join(" => ")).join("\n\t"));
 
 function serveError(ctx, s, msg) {
 	lroute.warn("an API request to", ctx.request.url.pathname,
@@ -50,25 +64,51 @@ async function checkBody(ctx, btype) {
 	try {
 		return await ctx.request.body({type: btype}).value;
 	} catch(_) {
-		serveError(400, "invalid or missing body");
+		serveError(ctx, 400, "invalid or missing body");
 		return null;
 	}
 }
 
-const svr    = new Oak.Application();
-const router = new Oak.Router();
-const abort  = new AbortController();
+async function checkUserSession(ctx, s) {
+	const token = await ctx.cookies.get("BearerToken");
+	if (!token) {
+		serveError(ctx, 403, "authentication required");
+		return null;
+	}
+	const user = s[token];
+	if (!user) {
+		serveError(ctx, 403, "invalid session");
+		await ctx.cookies.delete("BearerToken", { sameSite: "None" });
+		return null;
+	}
+	return user;
+}
+
+const abort = new AbortController();
 
 const chat = new CC.CryptMessageRoot(config.chat_path);
 await chat.cryptReady;
 
-router.get("/api/chat", ctx => {
-	ctx.response.type = "application/json";
-	ctx.response.body = chat.serializeUser();
-});
+if (Object.keys(chat.users).length)
+	logger.info("users:\n\t", Object.entries(chat.users).map(e =>
+		e[0] + " / " + e[1].pwhash).join("\n\t"));
 
+const sessions = {};
+
+const keyring = new Keyring(config.cookie_keyring, config.keyring_size);
+const svr = new Oak.Application({ keys: keyring.keys });
+const router = new Oak.Router();
+
+async function stop() {
+	logger.warn("Stopping!");
+	abort.abort();
+	keyring.save();
+	await chat.save();
+}
+
+// user API
 router.get("/api/user/exists", async ctx => {
-	ctx.response.type = "application/json";
+	ctx.response.type = JSON_MIME;
 	const body = await checkBody(ctx, "json");
 	if (body === null)
 		return;
@@ -80,13 +120,13 @@ router.get("/api/user/exists", async ctx => {
 });
 
 router.post("/api/user/new", async ctx => {
-	ctx.response.type = "application/json";
+	ctx.response.type = JSON_MIME;
 	const body = await checkBody(ctx, "form-data");
 	if (body === null)
 		return;
 	let formData;
 	try {
-		formData = body.read({ outPath: config.pfp_path });
+		formData = await body.read({ outPath: config.pfp_path });
 	} catch (_) {
 		serveError(ctx, 400, "invalid or missing multipart form data");
 		return;
@@ -110,9 +150,166 @@ router.post("/api/user/new", async ctx => {
 		serveError(ctx, 400, "missing password hash");
 		return;
 	}
-	chat.addUser(name, DenoUtil.Path.basename(png.filename), formData.fields.pwhash);
-	// TODO: set token cookie
+	let user;
+	try {
+		user = chat.addUser(name,
+			DenoUtil.Path.basename(png.filename),
+			formData.fields.pwhash);
+	} catch(e) {
+		serveError(ctx, 400, e.message);
+		return;
+	}
+	await ctx.cookies.set("BearerToken", user.token, { sameSite: "None" });
+	sessions[user.token] = user;
+	ctx.response.body = { success: true, user: user.serializeUser() };
+});
+
+router.post("/api/user/login", async ctx => {
+	ctx.response.type = JSON_MIME;
+	const body = await checkBody(ctx, "json");
+	if (body === null)
+		return;
+	const user = chat.users[body.name];
+	if (!user) {
+		serveError(ctx, 404, "no such user");
+		return;
+	}
+	if (body.pwhash !== user.pwhash) {
+		serveError(ctx, 403, "invalid password");
+		return;
+	}
+	await ctx.cookies.set("BearerToken", user.token, { sameSite: "None" });
+	sessions[user.token] = user;
+	ctx.response.body = { success: true, user: user.serializeUser() };
+});
+
+router.get("/api/user/logout", async ctx => {
+	ctx.response.type = JSON_MIME;
+	const user = await checkUserSession(ctx, sessions);
+	if (user === null)
+		return;
+	await ctx.cookies.delete("BearerToken", { sameSite: "None" });
+	delete sessions[user.token];
+	user.regenerateToken();
 	ctx.response.body = { success: true };
+});
+
+router.get("/api/user/session", async ctx => {
+	ctx.response.type = JSON_MIME;
+	const user = await checkUserSession(ctx, sessions);
+	if (user === null)
+		return;
+	ctx.response.body = { success: true, user: user.serializeUser() };
+});
+
+// comments API
+router.get("/api/comment/all", ctx => {
+	ctx.response.type = JSON_MIME;
+	ctx.response.body = chat.serializeUser();
+});
+
+router.post("/api/comment/single", async ctx => {
+	ctx.response.type = JSON_MIME;
+	const body = await checkBody(ctx, "json");
+	if (body === null)
+		return;
+	const m = chat.getMessageByPath(body.target);
+	if (m === null) {
+		serveError(ctx, 404, "no such message");
+		return;
+	}
+	ctx.response.body = { success: true, message: m.serialize() };
+});
+
+router.post("/api/comment/new", async ctx => {
+	ctx.response.type = JSON_MIME;
+	const user = await checkUserSession(ctx, sessions);
+	if (user === null)
+		return;
+	const body = await checkBody(ctx, "json");
+	if (body === null)
+		return;
+	const m = body.target?.length ? chat.getMessageByPath(body.target) : chat;
+	if (m === null) {
+		serveError(ctx, 404, "cannot reply to nonexistent message");
+		return;
+	}
+	m.add(user.name, body.content);
+	ctx.response.body = { success: true, message: m.children.at(-1).serialize() };
+});
+
+router.post("/api/comment/modify", async ctx => {
+	ctx.response.type = JSON_MIME;
+	const user = await checkUserSession(ctx, sessions);
+	if (user === null)
+		return;
+	const body = await checkBody(ctx, "json");
+	if (body === null)
+		return;
+	const m = chat.getMessageByPath(body.target);
+	if (m === null) {
+		serveError(ctx, 404, "no such message");
+		return;
+	}
+	if (m.user.name !== user.name) {
+		serveError(ctx, 403, "you are not allowed to edit this message");
+		return;
+	}
+	m.text = body.content;
+	ctx.response.body = { success: true };
+});
+
+router.post("/api/comment/delete", async ctx => {
+	ctx.response.type = JSON_MIME;
+	const user = await checkUserSession(ctx, sessions);
+	if (user === null)
+		return;
+	const body = await checkBody(ctx, "json");
+	if (body === null)
+		return;
+	const m = chat.getMessageByPath(body.target);
+	if (m === null) {
+		serveError(ctx, 404, "no such message");
+		return;
+	}
+	if (m.user.name !== user.name) {
+		serveError(ctx, 403, "you are not allowed to remove this message");
+		return;
+	}
+	m.up.remove(m.index);
+	ctx.response.body = { success: true };
+});
+
+router.post("/api/comment/vote", async ctx => {
+	ctx.response.type = JSON_MIME;
+	const user = await checkUserSession(ctx, sessions);
+	if (user === null)
+		return;
+	const body = await checkBody(ctx, "json");
+	if (body === null)
+		return;
+	const m = chat.getMessageByPath(body.target);
+	if (m === null) {
+		serveError(ctx, 404, "no such message");
+		return;
+	}
+	// practicing for IOCCC again (/j)
+	[m.downvote, m.unvote, m.upvote][
+		(body.vote === 0) +
+		(body.vote > 0) * 2
+	](user.name);
+	ctx.response.body = { success: true, score: m.score };
+});
+
+// profile pictures
+router.post("/api/pic/:name", ctx => {
+	const path = DenoUtil.agnosticPath(config.pfp_path + "/" + ctx.params.name);
+	if (!DenoUtil.lstatSafe(path)?.isFile) {
+		ctx.response.type = JSON_MIME;
+		serveError(ctx, 404, "no such profile picture");
+	}
+	ctx.response.type = "image/png";
+	ctx.response.body = Deno.readFileSync(path);
 });
 
 if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
@@ -124,34 +321,17 @@ if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
 	Deno.mkdirSync(config.pfp_path);
 }
 
-router.post("/api/pfps/:name", ctx => {
-	const path = DenoUtil.agnosticPath(config.pfp_path + "/" + ctx.params.name);
-	if (!DenoUtil.lstatSafe(path)?.isFile) {
-		ctx.response.type = "application/json";
-		serveError(404, "no such profile picture");
-	}
-	ctx.response.type = "image/png";
-	ctx.response.body = Deno.readFileSync(path);
+svr.use(async (ctx, next) => {
+	// assume frontend is running on the same domain
+	ctx.response.headers.set("Access-Control-Allow-Origin",
+		`https://${ctx.request.url.hostname}:${config.frontend_port}`);
+	ctx.response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+	ctx.response.headers.set("Access-Control-Allow-Credentials", true);
+	ctx.response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+	await next();
 });
-
-Deno.addSignalListener("SIGINT", () => {
-	logger.warn("Stopping!");
-	chat.save();
-	abort.abort();
-});
-
-svr.addEventListener("error", e => {
-	console.log(e.error);
-});
-
 svr.use(router.routes());
 svr.use(router.allowedMethods());
-svr.use((ctx, next) => {
-	lroute.warn("Not found:", ctx.request.url.pathname);
-	next();
-});
-
-logger.info(`HTTPS starting on ${config.svr_port}`);
 
 svr.listen({
 	secure: true,
@@ -160,3 +340,26 @@ svr.listen({
 	key: Deno.readTextFileSync(config.ckey_path),
 	cert: Deno.readTextFileSync(config.cert_path)
 });
+
+logger.info(`Listening on ${config.svr_port}.`);
+logger.info("Press CTRL+D to stop. DO NOT PRESS CTRL+C unless you want to exit uncleanly!");
+
+// oak somehow buggers SIGINT listeners. when you register
+// a SIGINT listener, start the Oak server and then hit
+// CTRL+C, you're thrown back into your command
+// interpreter while the actual process stays alive.
+// I figure there's some sort of weird interaction between
+// Deno.listenTls and signal handlers that creates this
+// issue, because it doesn't happen in other programs.
+
+function wait() {
+	const eof = new Uint8Array(1);
+	Deno.stdin.read(eof).then(async _ => {
+		if (eof[0] !== 0)
+			wait();
+		await stop();
+		Deno.exit(0);
+	});
+}
+
+wait();
