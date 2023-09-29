@@ -1,4 +1,5 @@
 import axios from 'axios'
+axios.defaults.withCredentials = true
 
 const commentURL='https://localhost:8443/api/comment'
 const userURL='https://localhost:8443/api/user'

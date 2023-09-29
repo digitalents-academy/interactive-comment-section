@@ -25,20 +25,10 @@ const App = () => {
   const [modal, setModal] = useState(true);
 
   useEffect(()=>{
-    async function FetchComments(){
-      console.log('hello pls')
-      try{
-        const Comments = await API.GetComments()
-        console.log(Comments.chat)
-        setMessages(Comments.chat)
-      } catch(e){
-        console.error(e)
-      }
-    }
-    FetchComments()
+    API.GetComments({user:user.user}).then(res=>{console.log(res)})
   }, [])
 
-  //useEffect(() => { dispatch(getSession());}, [dispatch]);
+  useEffect(() => { dispatch(getSession());}, [dispatch]);
 
   function getAuth(auth){
     if (auth === user.user) {
@@ -48,7 +38,7 @@ const App = () => {
   }
 
   function Update(){
-    API.GetComments().then(res=>{
+    API.GetComments({user:user.user}).then(res=>{
       setMessages(res)
     })
   }
@@ -61,6 +51,14 @@ const App = () => {
         setMessages(res)
       })
     }
+  }
+
+  function SendStuff(e){
+    API.Comment({user:user.user, text:e.text}).then(res=>{
+      if (res.success == true) {
+        API.GetComments().then(res=>setMessages(res))
+      }
+    })
   }
 
   if (user.user && modal) setModal(false);
@@ -152,6 +150,7 @@ const App = () => {
       {!user.user && modal && <Modal setModal={setModal}/>}
       <Send
         user={user}
+        onFinish={SendStuff}
       />
     </div>
   )
