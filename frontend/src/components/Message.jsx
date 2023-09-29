@@ -4,7 +4,7 @@ import Reply from '../components/Reply'
 
 import { UnixToGuess } from '../util/UnixConvert.js' //Unix timestamp converter
 
-import API from './controllers/api'
+import API from '../controllers/api'
 //UnixToGuess(UnixTimestamp) -> "# X(s) Ago" 
 //^ X = "seconds", "minutes", "hours", "days", "weeks", "months" ^
 

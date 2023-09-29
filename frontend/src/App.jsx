@@ -7,7 +7,7 @@ import API from './controllers/api' //GetChat (Get), Chat (Create), Update, Dele
 import Send from './components/Send'
 import Notification from './components/Notification'
 import { useDispatch } from 'react-redux'
-import { logOff, setUser, getSession } from './reducers/userReducer'
+import { getSession } from './reducers/userReducer'
 
 import './css/App.css'
 
@@ -24,16 +24,21 @@ const App = () => {
   const user = useSelector(x => x.user);
   const [modal, setModal] = useState(true);
 
-  useEffect(() => {  
-    API.GetComments().then(res=>{
-      setMessages(res)
-    })
-  })
+  async function FetchComments(){
+    console.log('hello pls')
+    try{
+      const Comments = await API.GetComments()
+      console.log(Comments)
+      setMessages(Comments)
+    } catch(e){
+      console.error(e)
+    }
+  }
 
-  useEffect(() => { dispatch(getSession()); }, [dispatch]);
+  useEffect(() => { dispatch(getSession()); FetchComments()}, [dispatch]);
 
   function getAuth(auth){
-    if (auth === user.name) {
+    if (auth === user.user) {
       return true
     }
     return false
@@ -137,9 +142,7 @@ const App = () => {
 
   return (
     <div className='Room'>
-      <Header />
-      {user.user && <a onClick={() => dispatch(logOff())}>{'log off (just for testing)'}</a>}
-      {!user.user && !modal && <a onClick={() => setModal(true)}>{'open login thing (testing also)'}</a>}
+      <Header setModal={setModal}/>
       <Notification />
       {
         del !== null && <DeleteModal
