@@ -78,7 +78,7 @@ export default function Message({all, upv, downv, unv, things, user, del, update
                 <div className='MessageBody'>
 
                     <div className='Title'>
-                        <img className='Pfp' src={user.pfp}/>
+                        <img className='Pfp' src={things.pfp||null}/>
                         <p className='AuthorName'>{things.user}</p>
                         {
                             isAuthor && <p className='youTag'>you</p>

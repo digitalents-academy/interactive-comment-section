@@ -111,9 +111,8 @@ const App = () => {
                 update={Update}
 
                 things={Reply}
-                user={{name:ReplyMSG.user.name, pfp:ReplyMSG.user.pfp}}
-                isAuthor={getAuth(ReplyMSG.user.name)}
-                key={ReplyMSG.index}
+                isAuthor={getAuth(Reply.user)}
+                key={Reply.index}
               />
             )
           })
@@ -131,8 +130,7 @@ const App = () => {
             update={Update}
 
             things={msg}
-            user={{name:Main.user.name, pfp:Main.user.pfp}}
-            isAuthor={getAuth(Main.user.name)}
+            isAuthor={getAuth(msg.user)}
             key={Main.index}
           />
           {
