@@ -51,3 +51,7 @@ export function agnosticPath(p) {
 export function pending(p) {
 	return (Deno.inspect(p) === "Promise { <pending> }") ? true : false;
 }
+
+export function resolveRelative(p) {
+	return Path.relative(p, Path.resolve(...[...arguments].slice(1)));
+}
