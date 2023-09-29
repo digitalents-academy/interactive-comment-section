@@ -10,7 +10,7 @@ async function GetComments(){ //CORS pain, so much
     return Req.then(res=>res.data)
 }
 
-async function GetSession(){
+async function GetSession(){ //GET requests keep failing ;^/
     const Req = axios.get(userURL+'/session')
     return Req.then(res=>res.data)
 }

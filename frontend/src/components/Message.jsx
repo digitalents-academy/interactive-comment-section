@@ -13,7 +13,6 @@ NEW
 */
 
 export default function Message({all, upv, downv, unv, things, user, del, update, isAuthor}){
-    console.log(things)
     const [editing, setEditing] = useState(null)
     const [replying, setReplying] = useState(null)
     const [vote, setVote] = useState(null)
@@ -107,7 +106,7 @@ export default function Message({all, upv, downv, unv, things, user, del, update
                 />
                 }
                 {
-                    !editing && <p className='Text'>{things.text}</p>
+                    !editing && <p className='Text'>{things.content}</p>
                 }
             </div>
             {

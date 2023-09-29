@@ -210,7 +210,7 @@ router.get("/api/comment/all", ctx => {
 
 router.post('/api/comment/getall', ctx => {
 	ctx.response.type = JSON_MIME;
-	ctx.response.body = chat.serialize();
+	ctx.response.body = chat.serializeUser();
 })
 
 router.post("/api/comment/single", async ctx => {

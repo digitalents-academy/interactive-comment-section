@@ -8,7 +8,7 @@ export default function Send({user, onFinish}){
     return(
         <form className='Send' onSubmit={handleSubmit(onFinish)}>
             <img className='Pfp' src={user.pfp}></img>
-            <textarea className='SendTx' {...register('text')}/>
+            <textarea className='SendTx' {...register('content')}/>
             <button className='Update' type='submit'>SEND</button>
         </form>
     )
