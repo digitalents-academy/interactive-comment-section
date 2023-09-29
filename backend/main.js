@@ -208,6 +208,11 @@ router.get("/api/comment/all", ctx => {
 	ctx.response.body = chat.serializeUser();
 });
 
+router.post('/api/comment/getall', ctx => {
+	ctx.response.type = JSON_MIME;
+	ctx.response.body = chat.serialize();
+})
+
 router.post("/api/comment/single", async ctx => {
 	ctx.response.type = JSON_MIME;
 	const body = await checkBody(ctx, "json");

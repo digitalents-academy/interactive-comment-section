@@ -1,4 +1,5 @@
 export function UnixToGuess(t) { //t = unix timestamp from data
+    t=t*1000
     const Diff = Math.floor(Date.now() - t) //Get difference
     const Seconds = Math.floor(Diff/1000) //Convert to seconds
     const Minutes = Math.floor(Seconds/60) //to minutes

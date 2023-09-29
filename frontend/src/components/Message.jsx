@@ -12,8 +12,8 @@ import API from '../controllers/api'
 NEW
 */
 
-export default function Message({all, upv, downv, unv, user, del, update, isAuthor}){
-    
+export default function Message({all, upv, downv, unv, things, user, del, update, isAuthor}){
+    console.log(things)
     const [editing, setEditing] = useState(null)
     const [replying, setReplying] = useState(null)
     const [vote, setVote] = useState(null)
@@ -68,7 +68,7 @@ export default function Message({all, upv, downv, unv, user, del, update, isAuth
                         className='Plus CTRL' 
                         src='/assets/plus.svg'
                     />
-                    <p className='Votes'>{score}</p>
+                    <p className='Votes'>{things.score}</p>
                     <img  
                         onClick={()=>{downv; Vote('-')}} 
                         className='Minus CTRL' 
@@ -80,24 +80,24 @@ export default function Message({all, upv, downv, unv, user, del, update, isAuth
 
                     <div className='Title'>
                         <img className='Pfp' src={user.pfp}/>
-                        <p className='AuthorName'>{user.name}</p>
+                        <p className='AuthorName'>{things.user}</p>
                         {
                             isAuthor && <p className='youTag'>you</p>
                         }
-                        <p className='Time'>{UnixToGuess(all.timestamp)}</p>
+                        <p className='Time'>{UnixToGuess(things.timestamp)}</p>
                     </div>
 
                 </div>
 
                 <div className='Controls'>
                     {
-                        isAuthor && <button onClick={() => del(all.index)} className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
+                        isAuthor && <button onClick={() => del(things.index)} className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
                     }
                     {
-                        isAuthor && <button onClick={()=>setEditing(all.index)} className='Edit'><img className='Ed' src='/assets/edit.svg'/> Edit</button>
+                        isAuthor && <button onClick={()=>setEditing(things.index)} className='Edit'><img className='Ed' src='/assets/edit.svg'/> Edit</button>
                     }
                     {
-                        !isAuthor && <button onClick={()=>setReplying(all.index)} className='Reply'><img className='Rep' src='/assets/reply.svg'/> Reply</button>
+                        !isAuthor && <button onClick={()=>setReplying(things.index)} className='Reply'><img className='Rep' src='/assets/reply.svg'/> Reply</button>
                     }
                 </div>
                 {
@@ -107,7 +107,7 @@ export default function Message({all, upv, downv, unv, user, del, update, isAuth
                 />
                 }
                 {
-                    !editing && <p className='Text'>{all.text}</p>
+                    !editing && <p className='Text'>{things.text}</p>
                 }
             </div>
             {

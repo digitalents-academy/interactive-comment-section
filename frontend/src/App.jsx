@@ -16,6 +16,7 @@ import DeleteModal from './components/Delete'
 import { MessageRoot, Message } from '../../common_lib/chat'
 //I've no idea how to use classes for anything, so I'm learning lol
 //In process of using classes for messages, sry X_X
+//CORS is eating my sanity
 const App = () => {
   const [messages, setMessages] = useState(null)
   const [del, setDel] = useState(null)
@@ -25,7 +26,7 @@ const App = () => {
   const [modal, setModal] = useState(true);
 
   useEffect(()=>{
-    API.GetComments().then(res=>{console.log(res)})
+    API.GetComments().then(res=>setMessages(res.chat))
   }, [])
 
   useEffect(() => { dispatch(getSession());}, [dispatch]);
@@ -38,9 +39,7 @@ const App = () => {
   }
 
   function Update(){
-    API.GetComments().then(res=>{
-      setMessages(res)
-    })
+    API.GetComments().then(res=>setMessages(res.chat))
   }
 
   function Delete(){
@@ -56,7 +55,6 @@ const App = () => {
   function SendStuff(e){
     API.Comment({user:user.user, text:e.text}).then(res=>{
       if (res.success == true) {
-        console.log(res)
         Update()
       }
     })
@@ -68,6 +66,7 @@ const App = () => {
     <div className='Room'>
       <Header setModal={setModal}/>
       <Notification />
+      <button onClick={console.log(messages)}>print</button>
       {
         del !== null && <DeleteModal
           onFinish={() => {Delete}}
@@ -111,6 +110,7 @@ const App = () => {
                 del={(e)=>{setDel(e)}}
                 update={Update}
 
+                things={Reply}
                 user={{name:ReplyMSG.user.name, pfp:ReplyMSG.user.pfp}}
                 isAuthor={getAuth(ReplyMSG.user.name)}
                 key={ReplyMSG.index}
@@ -130,6 +130,7 @@ const App = () => {
             del={(e)=>{setDel(e)}}
             update={Update}
 
+            things={msg}
             user={{name:Main.user.name, pfp:Main.user.pfp}}
             isAuthor={getAuth(Main.user.name)}
             key={Main.index}
