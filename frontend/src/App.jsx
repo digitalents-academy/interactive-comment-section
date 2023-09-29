@@ -38,7 +38,7 @@ const App = () => {
   }
 
   function Update(){
-    API.GetComments({user:user.user}).then(res=>{
+    API.GetComments().then(res=>{
       setMessages(res)
     })
   }
@@ -56,7 +56,8 @@ const App = () => {
   function SendStuff(e){
     API.Comment({user:user.user, text:e.text}).then(res=>{
       if (res.success == true) {
-        API.GetComments().then(res=>setMessages(res))
+        console.log(res)
+        Update()
       }
     })
   }
