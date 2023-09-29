@@ -321,6 +321,8 @@ if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
 	Deno.mkdirSync(config.pfp_path);
 }
 
+// CORS middleware; remember to enable credentials on all fetches to authenticated
+// endpoints ({ credentials: true })
 svr.use(async (ctx, next) => {
 	// assume frontend is running on the same domain
 	ctx.response.headers.set("Access-Control-Allow-Origin",
