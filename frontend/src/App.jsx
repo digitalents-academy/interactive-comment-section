@@ -24,18 +24,21 @@ const App = () => {
   const user = useSelector(x => x.user);
   const [modal, setModal] = useState(true);
 
-  async function FetchComments(){
-    console.log('hello pls')
-    try{
-      const Comments = await API.GetComments()
-      console.log(Comments)
-      setMessages(Comments)
-    } catch(e){
-      console.error(e)
+  useEffect(()=>{
+    async function FetchComments(){
+      console.log('hello pls')
+      try{
+        const Comments = await API.GetComments()
+        console.log(Comments.chat)
+        setMessages(Comments.chat)
+      } catch(e){
+        console.error(e)
+      }
     }
-  }
+    FetchComments()
+  }, [])
 
-  useEffect(() => { dispatch(getSession()); FetchComments()}, [dispatch]);
+  //useEffect(() => { dispatch(getSession());}, [dispatch]);
 
   function getAuth(auth){
     if (auth === user.user) {
@@ -60,7 +63,105 @@ const App = () => {
     }
   }
 
-  const MappedMessages = messages.map((msg) => {
+  if (user.user && modal) setModal(false);
+
+  return (
+    <div className='Room'>
+      <Header setModal={setModal}/>
+      <Notification />
+      {
+        del !== null && <DeleteModal
+          onFinish={() => {Delete}}
+          cancel={() => {setDel(null)}}
+        />
+      }
+      {(messages !== null && messages.length > 0) && messages.map((msg) => {
+        let Replies = null
+        const Root = new MessageRoot
+
+        const Main = new Message(
+          Root,
+          Root,
+          msg.index,
+          msg.user,
+          msg.votes,
+          msg.text,
+          msg.time
+        )
+
+        if (msg.children.length > 0) {
+          Replies = msg.children.map(Reply => {
+            
+            const ReplyMSG = new Message(
+              Root,
+              Main,
+              Reply.index,
+              Reply.user,
+              Reply.votes,
+              Reply.text,
+              Reply.time
+            )
+
+            return(
+              <MessageComp
+                all={ReplyMSG}
+
+                upv={ReplyMSG.upvote(user.name)}
+                downv={ReplyMSG.downvote(user.name)}
+                unv={ReplyMSG.unvote(user.name)}
+                del={(e)=>{setDel(e)}}
+                update={Update}
+
+                user={{name:ReplyMSG.user.name, pfp:ReplyMSG.user.pfp}}
+                isAuthor={getAuth(ReplyMSG.user.name)}
+                key={ReplyMSG.index}
+              />
+            )
+          })
+        }
+
+        return(
+          <div className='MessageTree'>
+          <MessageComp
+            all={Main}
+
+            upv={Main.upvote(user.name)}
+            downv={Main.downvote(user.name)}
+            unv={Main.unvote(user.name)}
+            del={(e)=>{setDel(e)}}
+            update={Update}
+
+            user={{name:Main.user.name, pfp:Main.user.pfp}}
+            isAuthor={getAuth(Main.user.name)}
+            key={Main.index}
+          />
+          {
+            Replies && 
+            <div className='Replies'>
+              <div className='Divider'>
+                <div className='DividerCenter'/>
+              </div>
+              <div className='RepliesContainer'>
+                {Replies}
+              </div>
+            </div>
+          }
+        </div>
+        )
+      })}
+      {!user.user && modal && <Modal setModal={setModal}/>}
+      <Send
+        user={user}
+      />
+    </div>
+  )
+}
+
+export default App
+
+/*
+
+Msgs == messages.map((msg) => {
       //big boi comment & reply tree
       let Replies = null
       const aRoot = new MessageRoot
@@ -138,25 +239,4 @@ const App = () => {
     }
   )
 
-  if (user.user && modal) setModal(false);
-
-  return (
-    <div className='Room'>
-      <Header setModal={setModal}/>
-      <Notification />
-      {
-        del !== null && <DeleteModal
-          onFinish={() => {Delete}}
-          cancel={() => {setDel(null)}}
-        />
-      }
-      {MappedMessages}
-      {!user.user && modal && <Modal setModal={setModal}/>}
-      <Send
-        user={user}
-      />
-    </div>
-  )
-}
-
-export default App
+  */
