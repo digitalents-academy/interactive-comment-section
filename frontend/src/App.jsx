@@ -53,7 +53,7 @@ const App = () => {
   }
 
   function SendStuff(e){
-    API.Comment({user:user.user, text:e.text}).then(res=>{
+    API.Comment({user:user.user, content:e.content}).then(res=>{
       if (res.success == true) {
         Update()
       }
