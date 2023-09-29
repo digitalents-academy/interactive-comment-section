@@ -6,8 +6,8 @@ const userURL='https://localhost:8443/api/user'
 
 //GET
 async function GetComments(){ //get all comments
-    const Req = axios.get(commentURL+'/all')
-    return Req.then(res=>res.data) 
+    const Req = axios.get(commentURL+'/all', {withCredentials:false})
+    return Req.then(res=>console.log(res)) 
 }
 
 async function GetSession(){

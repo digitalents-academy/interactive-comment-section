@@ -25,7 +25,7 @@ const App = () => {
   const [modal, setModal] = useState(true);
 
   useEffect(()=>{
-    API.GetComments({user:user.user}).then(res=>{console.log(res)})
+    API.GetComments().then(res=>{console.log(res)})
   }, [])
 
   useEffect(() => { dispatch(getSession());}, [dispatch]);
