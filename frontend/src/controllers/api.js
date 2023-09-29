@@ -1,5 +1,5 @@
 import axios from 'axios'
-//axios.defaults.withCredentials = true
+axios.defaults.withCredentials = true
 
 const commentURL='https://localhost:8443/api/comment'
 const userURL='https://localhost:8443/api/user'
@@ -7,7 +7,7 @@ const userURL='https://localhost:8443/api/user'
 //GET
 async function GetComments(){ //CORS pain, so much
     const Req = axios.get(commentURL+'/all')
-    return Req.then(res=>console.log(res)) 
+    return Req.then(res=>res.data) 
 }
 
 async function GetSession(){
