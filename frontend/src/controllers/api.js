@@ -8,7 +8,6 @@ const userURL='https://localhost:8443/api/user'
 async function GetComments(){ //CORS pain, so much
     try{
         const Req = axios.get(commentURL+'/all', {withCredentials:false})
-        console.log('TRYING')
         return Req.then(res=>res.data)
     } catch(e){console.log(e)}
 }
@@ -30,8 +29,11 @@ async function Modify(obj){
 }
 
 async function Delete(obj){
-    const Req = await axios.post(commentURL+'/delete', obj)
-    return Req.then(res=>res.data)
+    console.log(obj)
+    try{
+        const Req = axios.post(commentURL+'/delete', {target:obj})
+        return Req.then(res=>res.data)
+    } catch(e){console.log(e)}
 }
 
 async function Vote(obj){

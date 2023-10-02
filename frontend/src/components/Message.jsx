@@ -90,7 +90,7 @@ export default function Message({all, upv, downv, unv, things, user, del, update
 
                 <div className='Controls'>
                     {
-                        isAuthor && <button onClick={() => del(things.index)} className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
+                        isAuthor && <button onClick={del} className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
                     }
                     {
                         isAuthor && <button onClick={()=>setEditing(things.index)} className='Edit'><img className='Ed' src='/assets/edit.svg'/> Edit</button>

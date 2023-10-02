@@ -68,7 +68,7 @@ const App = () => {
       <Notification />
       {
         del !== null && <DeleteModal
-          onFinish={() => {Delete}}
+          onFinish={Delete}
           cancel={() => {setDel(null)}}
         />
       }
@@ -91,7 +91,7 @@ const App = () => {
             
             const ReplyMSG = new Message(
               Root,
-              Main,
+              Root,
               Reply.index,
               Reply.user,
               Reply.votes,
@@ -106,7 +106,7 @@ const App = () => {
                 upv={ReplyMSG.upvote(user.name)}
                 downv={ReplyMSG.downvote(user.name)}
                 unv={ReplyMSG.unvote(user.name)}
-                del={(e)=>{setDel(e)}}
+                del={() => {setDel(ReplyMSG)}}
                 update={Update}
 
                 things={Reply}
@@ -125,7 +125,7 @@ const App = () => {
             upv={Main.upvote(user.name)}
             downv={Main.downvote(user.name)}
             unv={Main.unvote(user.name)}
-            del={(e)=>{setDel(e)}}
+            del={() => {setDel(Main)}}
             update={Update}
 
             things={msg}

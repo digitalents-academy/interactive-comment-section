@@ -272,8 +272,8 @@ router.post("/api/comment/delete", async ctx => {
 		serveError(ctx, 404, "no such message");
 		return;
 	}
-	if (m.user.name !== user.name) {
-		serveError(ctx, 403, "you are not allowed to remove this message");
+	if (m.user && m.user.name && m.user.name !== user.name) {
+		serveError(ctx, 403, "you are not allowed to remove this message"+user.name+m.serializeUser());
 		return;
 	}
 	m.up.remove(m.index);
