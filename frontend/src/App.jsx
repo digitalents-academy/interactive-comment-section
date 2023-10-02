@@ -66,7 +66,6 @@ const App = () => {
     <div className='Room'>
       <Header setModal={setModal}/>
       <Notification />
-      <button onClick={console.log(messages)}>print</button>
       {
         del !== null && <DeleteModal
           onFinish={() => {Delete}}

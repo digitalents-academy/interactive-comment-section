@@ -6,33 +6,36 @@ const userURL='https://localhost:8443/api/user'
 
 //GET
 async function GetComments(){ //CORS pain, so much
-    const Req = axios.post(commentURL+'/getall')
-    return Req.then(res=>res.data)
+    try{
+        const Req = axios.get(commentURL+'/all', {withCredentials:false})
+        console.log('TRYING')
+        return Req.then(res=>res.data)
+    } catch(e){console.log(e)}
 }
 
-async function GetSession(){ //GET requests keep failing ;^/
-    const Req = axios.get(userURL+'/session')
+async function GetSession(){
+    const Req = await axios.get(userURL+'/session')
     return Req.then(res=>res.data)
 }
 
 //POST
 async function Comment(obj){
-    const Req = axios.post(commentURL+'/new', obj)
+    const Req = await axios.post(commentURL+'/new', obj)
     return Req.then(res=>res.data)
 }
 
 async function Modify(obj){
-    const Req = axios.post(commentURL+'/modify', obj)
+    const Req = await axios.post(commentURL+'/modify', obj)
     return Req.then(res=>res.data)
 }
 
 async function Delete(obj){
-    const Req = axios.post(commentURL+'/delete', obj)
+    const Req = await axios.post(commentURL+'/delete', obj)
     return Req.then(res=>res.data)
 }
 
 async function Vote(obj){
-    const Req = axios.post(commentURL+'/vote', obj)
+    const Req = await axios.post(commentURL+'/vote', obj)
     return Req.then(res=>res.data)
 }
 
