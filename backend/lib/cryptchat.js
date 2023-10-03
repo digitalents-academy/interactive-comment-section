@@ -21,7 +21,7 @@ import * as Chat from '../../common_lib/chat.js';
 import * as Util from '../../common_lib/util.js';
 import * as DenoUtil from './deno_util.js';
 
-const DELETED_USER = ''
+const DELETED_USER = "deleted user";
 
 async function genKeyWithIV() {
 	return [

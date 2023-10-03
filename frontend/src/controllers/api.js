@@ -19,8 +19,10 @@ async function GetSession(){
 
 //POST
 async function Comment(obj){
-    const Req = await axios.post(commentURL+'/new', obj)
-    return Req.then(res=>res.data)
+    try{
+        const Req = axios.post(commentURL+'/new', obj)
+        return Req.then(res=>res.data)
+    } catch(e){}
 }
 
 async function Modify(obj){
@@ -29,9 +31,8 @@ async function Modify(obj){
 }
 
 async function Delete(obj){
-    console.log(obj)
     try{
-        const Req = axios.post(commentURL+'/delete', {target:obj})
+        const Req = axios.post(commentURL+'/delete', {target:obj.path()})
         return Req.then(res=>res.data)
     } catch(e){console.log(e)}
 }

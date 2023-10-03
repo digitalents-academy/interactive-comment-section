@@ -13,7 +13,7 @@ import './css/App.css'
 
 import DeleteModal from './components/Delete'
 
-import { MessageRoot, Message } from '../../common_lib/chat'
+import * as Chat from '../../common_lib/chat';
 //I've no idea how to use classes for anything, so I'm learning lol
 //In process of using classes for messages, sry X_X
 //CORS is eating my sanity
@@ -24,6 +24,8 @@ const App = () => {
   const dispatch = useDispatch()
   const user = useSelector(x => x.user);
   const [modal, setModal] = useState(true);
+  const chat = new Chat.MessageRoot()
+  chat.addUser(user)
 
   useEffect(()=>{
     API.GetComments().then(res=>setMessages(res.chat))
@@ -74,31 +76,34 @@ const App = () => {
       }
       {(messages !== null && messages.length > 0) && messages.map((msg) => {
         let Replies = null
-        const Root = new MessageRoot
 
-        const Main = new Message(
-          Root,
-          Root,
+        /*const Main = new chat.Message(
+          chat,
+          this,
           msg.index,
           msg.user,
           msg.votes,
           msg.text,
           msg.time
-        )
+        )*/
+        const Main = chat.add(user.user, msg.content)
+        const xd = chat.serialize()
+        console.log(xd)
 
         if (msg.children.length > 0) {
           Replies = msg.children.map(Reply => {
             
-            const ReplyMSG = new Message(
-              Root,
-              Root,
+            /*const ReplyMSG = new chat.Message(
+              chat,
+              Main,
               Reply.index,
               Reply.user,
               Reply.votes,
               Reply.text,
               Reply.time
-            )
-
+            )*/
+            const ReplyMSG = chat.children.add(user.user, msg.content)
+            const flat = chat.children.serializeFlat()
             return(
               <MessageComp
                 all={ReplyMSG}
