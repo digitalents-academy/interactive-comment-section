@@ -135,7 +135,7 @@ export default function Message({all, things, del, update, voted, isAuthor, woot
                                 setEditing(null)
                             }
                         
-                        }} className='Edit'><img className='Ed' src='/assets/edit.svg'/> {!editing ? 'Edit' : 'Cancel'}</button>
+                        }} className='Edit'><img className='Ed' src='/assets/edit.svg'/> {editing == null ? 'Edit' : 'Cancel'}</button>
                     }
                     {
                         !isAuthor && <button onClick={()=>{
