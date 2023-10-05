@@ -169,14 +169,14 @@ const App = () => {
 
   return (
     <div className='Room'>
-      <Header setModal={setModal}/>
-      <Notification />
       {
         del !== null && <DeleteModal
           onFinish={Delete}
           cancel={() => {setDel(null)}}
         />
       }
+      <Header setModal={setModal}/>
+      <Notification />
       {
         MessagesMapped !== null && MessagesMapped
       }
