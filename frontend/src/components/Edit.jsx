@@ -3,8 +3,8 @@ import {useForm} from 'react-hook-form'
 export default function Edit({data, onFinish}){ 
     //data={replyingTo, content}
     const {handleSubmit, register, formState:{errors}} = useForm()
-
-    const tx = data.text
+    console.log(data, 'TRIGGERED EDIT')
+    const tx = data.text || data.content
 
     return(
         <form onSubmit={handleSubmit(onFinish)} className='Editing'>

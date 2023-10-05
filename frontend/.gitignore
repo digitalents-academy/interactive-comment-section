@@ -1,8 +1,0 @@
-# certs
-*.pem
-node_modules
-
-# other stuff
-backend/comments.json
-backend/keyring.json
-backend/pfps/

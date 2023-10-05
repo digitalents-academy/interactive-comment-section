@@ -1,0 +1,27 @@
+.header-main {
+  display: flex;
+  justify-content: space-around;
+  height: 4rem;
+  width: 100%;
+  background: #141414;
+  font-family: "Inter", sans-serif;
+  margin-bottom: auto;
+  margin-left: 0;
+  padding: 0.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.header-main .header-label {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  font-family: "Rubik", sans-serif;
+  font-size: 16px;
+  line-height: 20px;
+  text-align: center;
+  gap: 5px;
+  color: white;
+  cursor: pointer;
+}/*# sourceMappingURL=Header.css.map */

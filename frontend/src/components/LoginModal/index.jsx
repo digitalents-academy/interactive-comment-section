@@ -31,6 +31,7 @@ const LoginModal = ({ setModal }) => {
                             pwd={password} 
                             setUser={setUsername} 
                             setPwd={setPassword} 
+                            setModal={setModal} 
                             Header={Header}
                         /> 
                         :
@@ -39,6 +40,7 @@ const LoginModal = ({ setModal }) => {
                             pwd={password} 
                             setUser={setUsername} 
                             setPwd={setPassword} 
+                            setModal={setModal} 
                             Header={Header}
                         />
                     }

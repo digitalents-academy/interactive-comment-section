@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
-import TextInput from './TextInput';
+import PasswordInput from './PasswordInput';
+import UsernameInput from './UsernameInput';
 import Buttons from './Buttons';
 import { useDispatch } from 'react-redux';
 import { setNoti } from '../../../reducers/notiReducer';
 import { login } from '../../../reducers/userReducer';
 
-const Login = ({ user, pwd, setPwd, setUser, Header }) => {
+const Login = ({ user, pwd, setPwd, setUser, setModal, Header }) => {
     
     const dispatch = useDispatch();
 
@@ -19,8 +20,9 @@ const Login = ({ user, pwd, setPwd, setUser, Header }) => {
     return (
         <div>
             <Header txt='Login pls' />
-            <TextInput user={user} setUser={setUser} pwd={pwd} setPwd={setPwd} />
-            <Buttons txt='Login' submit={submit} isAllowed={isAllowed} />
+            <UsernameInput user={user} setUser={setUser} />
+            <PasswordInput pwd={pwd} setPwd={setPwd} />
+            <Buttons txt='Login' submit={submit} setModal={setModal} isAllowed={isAllowed}/>
         </div>
     );
 };

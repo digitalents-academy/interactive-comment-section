@@ -229,13 +229,13 @@ router.post("/api/comment/new", async ctx => {
 	const body = await checkBody(ctx, "json");
 	if (body === null)
 		return;
-	const m = body.target?.length ? chat.getMessageByPath(body.target) : chat;
+	const m = body.target ? chat.getMessageByPath(body.target) : chat;
 	if (m === null) {
 		serveError(ctx, 404, "cannot reply to nonexistent message");
 		return;
 	}
 	m.add(user.name, body.content);
-	ctx.response.body = { success: true, message: m.children.at(-1).serialize() };
+	ctx.response.body = { success: true };
 });
 
 router.post("/api/comment/modify", async ctx => {
@@ -251,13 +251,15 @@ router.post("/api/comment/modify", async ctx => {
 		serveError(ctx, 404, "no such message");
 		return;
 	}
-	if (m.user.name !== user.name) {
+	if (m.user && m.user.name && m.user.name !== user.name) {
 		serveError(ctx, 403, "you are not allowed to edit this message");
 		return;
 	}
-	m.text = body.content;
-	ctx.response.body = { success: true };
+	const Cont = body.content;//Added some stuff don't mind me x_X -J
+	m.text = Cont;
+	ctx.response.body = { success: true, a:Cont };
 });
+
 
 router.post("/api/comment/delete", async ctx => {
 	ctx.response.type = JSON_MIME;
@@ -272,11 +274,11 @@ router.post("/api/comment/delete", async ctx => {
 		serveError(ctx, 404, "no such message");
 		return;
 	}
-	if (m.user.name !== user.name) {
-		serveError(ctx, 403, "you are not allowed to remove this message");
+	if (m.user && m.user.name && m.user.name !== user.name) {
+		serveError(ctx, 403, "you are not allowed to remove this message"+user.name+m.serializeUser());
 		return;
 	}
-	m.up.remove(m.index);
+	m.up.remove(body.RealIndex);
 	ctx.response.body = { success: true };
 });
 
@@ -321,8 +323,6 @@ if (!DenoUtil.lstatSafe(config.pfp_path)?.isDirectory) {
 	Deno.mkdirSync(config.pfp_path);
 }
 
-// CORS middleware; remember to enable credentials on all fetches to authenticated
-// endpoints ({ credentials: true })
 svr.use(async (ctx, next) => {
 	// assume frontend is running on the same domain
 	ctx.response.headers.set("Access-Control-Allow-Origin",

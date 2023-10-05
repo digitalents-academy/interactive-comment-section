@@ -12,45 +12,63 @@ import API from '../controllers/api'
 NEW
 */
 
-export default function Message({all, upv, downv, unv, user, del, update, isAuthor}){
-    
+export default function Message({all, things, del, update, voted, isAuthor, woot, asd}){
+
     const [editing, setEditing] = useState(null)
     const [replying, setReplying] = useState(null)
-    const [vote, setVote] = useState(null)
+    const [vote, setVote] = useState(voted || null)
     const [score, setScore] = useState(0)
-
+    /*
+    <!> VOTING IS EXTREMELY BROKEN <!>
     function Vote(set){ //I'm unsure if this will work ;-;
         if ((vote != set) || (vote==null)) { //if vote is different or nonexisting
             if (set == '-') {
-                downv
+                all.downvote()
             } else if (set=='+'){
-                upv
+                all.upvote()
             }
-            API.Vote().then(res=>{
-                if (res.success == true) {
-                    setScore(res.score)
-                }
-            })
+            if (woot!=null){
+                API.Vote({target:woot.target, vote:1}).then(res=>{
+                    if (res.success == true) {
+                        setScore(res.score)
+                    }
+                })
+            } else {
+                API.Vote({target:asd.target}).then(res=>{
+                    if (res.success == true) {
+                        setScore(res.score)
+                    }
+                })
+            }
             setVote(set)
         } else if (vote==set) { //if vote == set we unvote
-            unv()
+            all.unvote()
             setVote(null)
         }
-    }
+    }*/
 
     const handleEdit = (e) => { //When edit form is submitted
-        console.log(e)
-        API.Modify(e).then(res=>{
-            if (res.success == true) {
-                update()
-            }
-        })
+        if (woot!=null){
+            API.Modify({target:woot.target, content:e.content}).then(res=>{
+                if (res.success == true && res.a != null) {
+                    all.edit(res.a)
+                    things.content = res.a
+                    update()
+                }
+            })
+        } else {
+            API.Modify({target:asd.target, content:e.content}).then(res=>{
+                if (res.success == true && res.a != null) {
+                    all.edit(res.a)
+                    things.content = res.a
+                    update()
+                }
+            })
+        }
         setEditing(null)
     }
-
     const handleReply = (e) => { //When reply form is submitted
-        console.log(e)
-        API.Comment(e).then(res=>{
+        API.Comment({content:e.content,target:asd.target}).then(res=>{
             if (res.success == true) {
                 update()
             }
@@ -58,19 +76,35 @@ export default function Message({all, upv, downv, unv, user, del, update, isAuth
         setReplying(null)
     }
 
+    /*async function Base64ToImage(callback) {
+        var im = new Image();
+        im.src = PFP;
+        im.className='Pfp';
+        return im
+    }
+
+    const IMG = Base64ToImage()*/
+    /*const FixedImg = () => {
+        return(
+            <>
+                <img src={PFP.src} className={PFP.className}/>
+            </>
+        )
+    }*/
+
     return(
         <div className='MessageContainer'>
             <div className='Message'>
 
                 <div className='Vote'>
                     <img 
-                        onClick={()=>{upv; Vote('+')}} 
+                        //onClick={()=>{Vote('+')}} 
                         className='Plus CTRL' 
                         src='/assets/plus.svg'
                     />
-                    <p className='Votes'>{score}</p>
+                    <p className='Votes'>{things.score}</p>
                     <img  
-                        onClick={()=>{downv; Vote('-')}} 
+                        //onClick={()=>{Vote('-')}} 
                         className='Minus CTRL' 
                         src='/assets/minus.svg'
                     />
@@ -79,43 +113,42 @@ export default function Message({all, upv, downv, unv, user, del, update, isAuth
                 <div className='MessageBody'>
 
                     <div className='Title'>
-                        <img className='Pfp' src={user.pfp}/>
-                        <p className='AuthorName'>{user.name}</p>
+                        <img className='Pfp'/>
+                        <p className='AuthorName'>{things.user}</p>
                         {
                             isAuthor && <p className='youTag'>you</p>
                         }
-                        <p className='Time'>{UnixToGuess(all.timestamp)}</p>
+                        <p className='Time'>{UnixToGuess(things.timestamp)}</p>
                     </div>
 
                 </div>
 
                 <div className='Controls'>
                     {
-                        isAuthor && <button onClick={() => del(all.index)} className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
+                        isAuthor && <button onClick={del} className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
                     }
                     {
-                        isAuthor && <button onClick={()=>setEditing(all.index)} className='Edit'><img className='Ed' src='/assets/edit.svg'/> Edit</button>
+                        isAuthor && <button onClick={()=>{setEditing(things.index); console.log(editing)}} className='Edit'><img className='Ed' src='/assets/edit.svg'/> Edit</button>
                     }
                     {
-                        !isAuthor && <button onClick={()=>setReplying(all.index)} className='Reply'><img className='Rep' src='/assets/reply.svg'/> Reply</button>
+                        !isAuthor && <button onClick={()=>setReplying(things.index)} className='Reply'><img className='Rep' src='/assets/reply.svg'/> Reply</button>
                     }
                 </div>
                 {
-                editing && <Edit
-                        data={all}
+                    editing != null ? <Edit
+                        data={things}
                         onFinish={handleEdit}
-                />
-                }
-                {
-                    !editing && <p className='Text'>{all.text}</p>
+                /> : <p className='Text'>{(things.content)}</p>
                 }
             </div>
             {
-                replying && <Reply
-                    data={all}
+                replying != null && <Reply
+                    data={things}
                     onFinish={handleReply}
                 />
             }
         </div>
     )
 }
+
+//<img className='Pfp' src={PFP}/>

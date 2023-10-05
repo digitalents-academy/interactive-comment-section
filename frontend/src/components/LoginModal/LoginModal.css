@@ -86,10 +86,6 @@
 .modal-bg .login-modal .modal-content .usernameinput input:hover, .modal-bg .login-modal .modal-content .passwordinput input:hover {
   border: 2px solid hsl(212, 24%, 26%);
 }
-.modal-bg .login-modal .modal-content .usernameinput .exists, .modal-bg .login-modal .modal-content .passwordinput .exists {
-  color: red;
-  font-size: small;
-}
 .modal-bg .login-modal .modal-content .clickhere {
   color: hsl(211, 10%, 45%);
   width: 100%;
@@ -129,4 +125,5 @@
 }
 .modal-bg .login-modal .modal-content .loginbutton button:hover {
   filter: brightness(110%);
+  cursor: pointer;
 }/*# sourceMappingURL=LoginModal.css.map */

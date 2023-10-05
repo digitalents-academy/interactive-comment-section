@@ -92,11 +92,6 @@
                 input:hover {
                     border: 2px solid hsl(212, 24%, 26%);
                 }
-
-                .exists {
-                    color: red;
-                    font-size: small;
-                }
     
             }
 
@@ -144,6 +139,7 @@
     
                 button:hover {
                     filter: brightness(110%);
+                    cursor:pointer;
                 }
             }
         }
