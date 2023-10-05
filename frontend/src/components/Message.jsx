@@ -129,9 +129,9 @@ export default function Message({all, things, del, update, voted, isAuthor, woot
                     }
                     {
                         isAuthor && <button onClick={()=>{
-                            if (!editing){
+                            if (editing == null){
                                 setEditing(things.index)
-                            } else if (editing){
+                            } else if (editing != null){
                                 setEditing(null)
                             }
                         
@@ -139,13 +139,13 @@ export default function Message({all, things, del, update, voted, isAuthor, woot
                     }
                     {
                         !isAuthor && <button onClick={()=>{
-                            if (!replying) {
+                            if (replying == null) {
                                 setReplying(things.index)
-                            } else if (replying) {
+                            } else if (replying != null) {
                                 setReplying(null)
                             }
                             
-                        }} className='Reply'><img className='Rep' src='/assets/reply.svg'/> {!replying ? 'Reply' : 'Cancel'}</button>
+                        }} className='Reply'><img className='Rep' src='/assets/reply.svg'/> {replying == null ? 'Reply' : 'Cancel'}</button>
                     }
                 </div>
                 {
