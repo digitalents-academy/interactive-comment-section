@@ -181,10 +181,10 @@ const App = () => {
         MessagesMapped !== null && MessagesMapped
       }
       {!user.user && modal && <Modal setModal={setModal}/>}
-      <Send
+      {user.user && <Send
         user={user}
         onFinish={SendStuff}
-      />
+      />}
     </div>
   )
 }
