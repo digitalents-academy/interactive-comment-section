@@ -128,10 +128,24 @@ export default function Message({all, things, del, update, voted, isAuthor, woot
                         isAuthor && <button onClick={del} className='Delete'><img className='Del' src='/assets/delete.svg'/> Delete</button>
                     }
                     {
-                        isAuthor && <button onClick={()=>{setEditing(things.index); console.log(editing)}} className='Edit'><img className='Ed' src='/assets/edit.svg'/> Edit</button>
+                        isAuthor && <button onClick={()=>{
+                            if (!editing){
+                                setEditing(things.index)
+                            } else if (editing){
+                                setEditing(null)
+                            }
+                        
+                        }} className='Edit'><img className='Ed' src='/assets/edit.svg'/> {!editing ? 'Edit' : 'Cancel'}</button>
                     }
                     {
-                        !isAuthor && <button onClick={()=>setReplying(things.index)} className='Reply'><img className='Rep' src='/assets/reply.svg'/> Reply</button>
+                        !isAuthor && <button onClick={()=>{
+                            if (!replying) {
+                                setReplying(things.index)
+                            } else if (replying) {
+                                setReplying(null)
+                            }
+                            
+                        }} className='Reply'><img className='Rep' src='/assets/reply.svg'/> {!replying ? 'Reply' : 'Cancel'}</button>
                     }
                 </div>
                 {
