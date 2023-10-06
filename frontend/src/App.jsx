@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import Header from './components/Header'
 import MessageComp from './components/Message'
 import Modal from './components/LoginModal'
-import API from './controllers/api' //GetChat (Get), Chat (Create), Update, Delete
+import API from './controllers/api'
 import Send from './components/Send'
 import Notification from './components/Notification'
 import { useDispatch } from 'react-redux'
@@ -14,9 +14,6 @@ import './css/App.css'
 import DeleteModal from './components/Delete'
 
 import * as Chat from '../../common_lib/chat';
-//I've no idea how to use classes for anything, so I'm learning lol
-//In process of using classes for messages, sry X_X
-//CORS is eating my sanity
 
 let LoadedUsers = {}
 
@@ -66,13 +63,8 @@ const App = () => {
   }
 
   function GetVote(msg){
-    if (msg.votes.length > 0){
-      for (let i=0; i<msg.votes.length; i++) {
-        if (msg.votes[i] == user.user) {
-          console.log(user.user, 'Has Voted for ', msg)
-          return true
-        }
-      }
+    if (msg.votes && msg.votes[user.user]){
+      return msg.votes[user.user]
     }
     return false
   }
@@ -124,6 +116,7 @@ const App = () => {
               del={() => {RPL && setDel({target: RPL.path(), RealIndex: ind})}}
               update={Update}
 
+              upv={()=>{RPL.upvote(user.user)}}
               asd={{target: MSG.path()}}
               woot={{target: RPL.path()}}
               things={Reply}

@@ -6,46 +6,18 @@ import { UnixToGuess } from '../util/UnixConvert.js' //Unix timestamp converter
 
 import API from '../controllers/api'
 //UnixToGuess(UnixTimestamp) -> "# X(s) Ago" 
-//^ X = "seconds", "minutes", "hours", "days", "weeks", "months" ^
+//^ X = "seconds", "minutes", "hours", "days", "weeks", "months", "years" ^
 
 /*
 NEW
 */
 
-export default function Message({all, things, del, update, voted, isAuthor, woot, asd}){
+export default function Message({all, things, del, update, upv, voted, isAuthor, woot, asd}){
 
     const [editing, setEditing] = useState(null)
     const [replying, setReplying] = useState(null)
     const [vote, setVote] = useState(voted || null)
     const [score, setScore] = useState(0)
-    /*
-    <!> VOTING IS EXTREMELY BROKEN <!>
-    function Vote(set){ //I'm unsure if this will work ;-;
-        if ((vote != set) || (vote==null)) { //if vote is different or nonexisting
-            if (set == '-') {
-                all.downvote()
-            } else if (set=='+'){
-                all.upvote()
-            }
-            if (woot!=null){
-                API.Vote({target:woot.target, vote:1}).then(res=>{
-                    if (res.success == true) {
-                        setScore(res.score)
-                    }
-                })
-            } else {
-                API.Vote({target:asd.target}).then(res=>{
-                    if (res.success == true) {
-                        setScore(res.score)
-                    }
-                })
-            }
-            setVote(set)
-        } else if (vote==set) { //if vote == set we unvote
-            all.unvote()
-            setVote(null)
-        }
-    }*/
 
     const handleEdit = (e) => { //When edit form is submitted
         if (woot!=null){
@@ -83,8 +55,8 @@ export default function Message({all, things, del, update, voted, isAuthor, woot
         return im
     }
 
-    const IMG = Base64ToImage()*/
-    /*const FixedImg = () => {
+    const IMG = Base64ToImage()
+    const FixedImg = () => {
         return(
             <>
                 <img src={PFP.src} className={PFP.className}/>
@@ -97,17 +69,35 @@ export default function Message({all, things, del, update, voted, isAuthor, woot
             <div className='Message'>
 
                 <div className='Vote'>
-                    <img 
-                        //onClick={()=>{Vote('+')}} 
-                        className='Plus CTRL' 
-                        src='/assets/plus.svg'
-                    />
+                    {
+                        vote != null && vote == 1 ? 
+                        <img 
+                            //onClick={()=>{Vote('+')}}
+                            className='V2'
+                            src='/assets/plus.svg'
+                        /> 
+                        : 
+                        <img 
+                            //onClick={upv}
+                            className='Plus CTRL'
+                            src='/assets/plus.svg'
+                        />
+                    }
                     <p className='Votes'>{things.score}</p>
-                    <img  
-                        //onClick={()=>{Vote('-')}} 
-                        className='Minus CTRL' 
-                        src='/assets/minus.svg'
-                    />
+                    {
+                        vote != null && vote == -1 ? 
+                        <img 
+                            //onClick={()=>{Vote('+')}}
+                            className='V2'
+                            src='/assets/minus.svg'
+                        /> 
+                        : 
+                        <img  
+                            //onClick={()=>{Vote('-')}} 
+                            className='Minus CTRL' 
+                            src='/assets/minus.svg'
+                        />
+                    }
                 </div>
 
                 <div className='MessageBody'>

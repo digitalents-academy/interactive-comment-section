@@ -147,6 +147,13 @@ button {
   filter: invert(36%) sepia(65%) saturate(712%) hue-rotate(202deg) brightness(84%) contrast(88%);
 }
 
+.V2 {
+  filter: invert(36%) sepia(65%) saturate(712%) hue-rotate(202deg) brightness(84%) contrast(88%);
+}
+.V2:hover {
+  cursor: pointer;
+}
+
 .Tag {
   color: hsl(238, 40%, 52%);
   font-weight: 700;
