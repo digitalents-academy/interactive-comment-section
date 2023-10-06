@@ -111,7 +111,10 @@ export class MessageRoot {
 
 export class Message {
 	#computeScore() {
-		this.score = Object.values(this.votes).reduce((a, b) => a + b);
+		const objVal = Object.values(this.votes)
+		if (objVal.length > 0) {
+			this.score = objVal.reduce((a, b) => a + b);
+		}
 	}
 
 	constructor(r, p, i, u, v, t, ts) {

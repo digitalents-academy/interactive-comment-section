@@ -116,7 +116,20 @@ const App = () => {
               del={() => {RPL && setDel({target: RPL.path(), RealIndex: ind})}}
               update={Update}
 
-              upv={()=>{RPL.upvote(user.user)}}
+              voteHandler={(e)=>{
+                if (e=='VoteUp') {
+                  RPL.upvote(user.user)
+                } else if (e=='VoteDown'){
+                  RPL.downvote(user.user)
+                } else if (e=='Unvote'){
+                  RPL.unvote(user.user)
+                }
+              }}
+
+              getScore={()=>{
+                return RPL.score
+              }}
+              votes={RPL.score}
               asd={{target: MSG.path()}}
               woot={{target: RPL.path()}}
               things={Reply}
@@ -137,6 +150,21 @@ const App = () => {
             del={() => {MSG && setDel({target: MSG.path(), RealIndex: indx})}}
             update={Update}
 
+            voteHandler={(e)=>{
+              if (e=='VoteUp') {
+                MSG.upvote(user.user)
+              } else if (e=='VoteDown'){
+                MSG.downvote(user.user)
+              } else if (e=='Unvote'){
+                MSG.unvote(user.user)
+              }
+            }}
+            
+            getScore={()=>{
+              return MSG.score
+            }}
+
+            votes={MSG.score}
             asd={{target: MSG.path()}}
             things={Message}
             user={user}

@@ -12,12 +12,12 @@ import API from '../controllers/api'
 NEW
 */
 
-export default function Message({all, things, del, update, upv, voted, isAuthor, woot, asd}){
+export default function Message({all, things, del, update, votes, voteHandler, getScore, voted, isAuthor, woot, asd}){
 
     const [editing, setEditing] = useState(null)
     const [replying, setReplying] = useState(null)
     const [vote, setVote] = useState(voted || null)
-    const [score, setScore] = useState(0)
+    const [score, setScore] = useState(votes || 0)
 
     const handleEdit = (e) => { //When edit form is submitted
         if (woot!=null){
@@ -39,6 +39,7 @@ export default function Message({all, things, del, update, upv, voted, isAuthor,
         }
         setEditing(null)
     }
+
     const handleReply = (e) => { //When reply form is submitted
         API.Comment({content:e.content,target:asd.target}).then(res=>{
             if (res.success == true) {
@@ -72,28 +73,44 @@ export default function Message({all, things, del, update, upv, voted, isAuthor,
                     {
                         vote != null && vote == 1 ? 
                         <img 
-                            //onClick={()=>{Vote('+')}}
+                            onClick={()=>{
+                                voteHandler('Unvote')
+                                setScore(getScore())
+                                setVote(0)
+                            }}
                             className='V2'
                             src='/assets/plus.svg'
                         /> 
                         : 
                         <img 
-                            //onClick={upv}
+                            onClick={()=>{
+                                voteHandler('VoteUp')
+                                setScore(getScore())
+                                setVote(1)
+                            }} 
                             className='Plus CTRL'
                             src='/assets/plus.svg'
                         />
                     }
-                    <p className='Votes'>{things.score}</p>
+                    <p className='Votes'>{score}</p>
                     {
                         vote != null && vote == -1 ? 
                         <img 
-                            //onClick={()=>{Vote('+')}}
+                            onClick={()=>{
+                                voteHandler('Unvote')
+                                setScore(getScore())
+                                setVote(0)
+                            }}
                             className='V2'
                             src='/assets/minus.svg'
                         /> 
                         : 
                         <img  
-                            //onClick={()=>{Vote('-')}} 
+                            onClick={()=>{
+                                const V = voteHandler('VoteDown')
+                                setScore(getScore())
+                                setVote(-1)
+                            }} 
                             className='Minus CTRL' 
                             src='/assets/minus.svg'
                         />
